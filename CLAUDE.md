@@ -10,8 +10,9 @@ Public visé : les sportifs, et surtout les actifs pressés qui n'ont pas le tem
 
 ## État actuel
 
-- Tout le site tient dans `index.html` : HTML, CSS et JavaScript dans un seul fichier, aucune dépendance, aucune étape de compilation.
-- Polices : Barlow et Barlow Condensed, chargées depuis Google Fonts.
+- L'application tient dans `index.html` : HTML, CSS et JavaScript dans un seul fichier, aucune dépendance, aucune étape de compilation.
+- Fichiers annexes : `mentions-legales.html`, `confidentialite.html` et `404.html` (style commun dans `pages.css`), `favicon.svg`, `apple-touch-icon.png`, `icons/`, `manifest.webmanifest`, `og-image.png` (aperçu de partage 1200×630).
+- Polices : Barlow et Barlow Condensed, hébergées dans `fonts/` (woff2, sous-ensemble latin, licence `fonts/OFL.txt`). Aucune requête vers un service tiers : c'est un argument de la page Confidentialité, à préserver.
 - Les réponses de l'utilisateur restent dans son navigateur (localStorage, clés `calibre-v2` pour le profil et `calibre-jour` pour les repas validés du jour).
 - Mode clair et sombre automatiques. Pensé mobile d'abord : sous 720 px de large, les onglets passent dans une barre en bas de l'écran.
 
@@ -55,15 +56,32 @@ Ne pas modifier ces règles sans demande explicite.
 
 ## Méthode de travail
 
+### Méthode POSER (à appliquer à chaque demande)
+
+Commencer chaque réponse par ces 5 points, en une ou deux lignes chacun :
+
+- **Persona** : le rôle d'expert adopté. Par défaut : développeur web senior spécialisé dans les sites santé et sport, exigeant sur le design mobile.
+- **Objectif** : le résultat attendu, reformulé en une phrase.
+- **Situation** : le contexte utile (état du site, contraintes, existant).
+- **Exclusions** : ce qui ne sera pas fait. Par défaut : ne pas modifier les règles de calcul, garder l'identité visuelle, aucun framework sans accord.
+- **Itération en 3 tours** : 1) plan court sans toucher au code, puis attendre la validation ; 2) réaliser ce qui est validé ; 3) intégrer les retours et résumer clairement ce qui a changé.
+
+### Habitudes
+
 - Avant de valider un changement visible, vérifier le rendu sur mobile (390 px) et sur ordinateur (1366 px), en mode clair et en mode sombre.
 - Après tout changement de calcul, tester au moins quatre profils (homme et femme, sèche et prise de masse) et vérifier que le menu reste à ±2 % de la cible.
 - Garder un site sans étape de compilation tant qu'aucun framework n'a été choisi.
 - Messages de commit en français, courts et clairs.
 - Le propriétaire du projet travaille souvent depuis son téléphone : réponses courtes, et un résumé clair de ce qui a changé à la fin de chaque tâche.
 
+## Avant la mise en ligne
+
+- Compléter les champs surlignés `[…]` (balises `mark.todo`) dans `mentions-legales.html` et `confidentialite.html` : éditeur, contact, hébergeur, date.
+- Remplacer les URL relatives des balises `og:` d'`index.html` par le domaine définitif, et ajouter `<link rel="canonical">`.
+
 ## Idées pour la suite
 
 - Page d'accueil vitrine avant le questionnaire.
 - Options alimentaires : végétarien, sans porc, sans poisson, sans lactose.
-- Mise en ligne sur un nom de domaine.
+- Mise en ligne sur un nom de domaine (le site est prêt : il reste les infos légales et le domaine).
 - Comptes utilisateurs pour retrouver son plan sur tous ses appareils.
