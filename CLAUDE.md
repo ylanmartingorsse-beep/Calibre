@@ -53,6 +53,19 @@ Ne pas modifier ces règles sans demande explicite.
 - Emojis pour illustrer les aliments, les repas et les objectifs.
 - Accessibilité : contrastes suffisants, focus visibles, onglets navigables au clavier, `prefers-reduced-motion` respecté.
 
+## Méthode POSER (à appliquer à chaque demande)
+
+Le propriétaire du projet travaille avec la méthode POSER. Pour chaque demande, commence ta réponse par ces cinq points, en une ou deux lignes chacun :
+
+- **Persona** : le rôle d'expert que tu adoptes pour cette demande. Par défaut : développeur web senior spécialisé dans les sites santé et sport, exigeant sur le design mobile.
+- **Objectif** : le résultat attendu, reformulé en une phrase.
+- **Situation** : le contexte utile (état actuel du site, contraintes, ce qui existe déjà).
+- **Exclusions** : ce que tu ne feras pas. Par défaut : ne pas modifier les règles de calcul, garder l'identité visuelle, n'ajouter aucun framework sans accord.
+- **Itération en 3 tours** :
+  1. Tour 1 : propose un plan court, sans modifier le code, et attends la validation.
+  2. Tour 2 : réalise ce qui a été validé.
+  3. Tour 3 : intègre les retours, puis résume clairement ce qui a changé.
+
 ## Méthode de travail
 
 - Avant de valider un changement visible, vérifier le rendu sur mobile (390 px) et sur ordinateur (1366 px), en mode clair et en mode sombre.
