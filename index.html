@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calibre, ton plan nutrition sur mesure</title>
+<meta name="description" content="Calories, macronutriments au gramme près, micronutriments et menu du jour, calculés selon ton profil et ton objectif.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F2F4F1; --surface:#FFFFFF; --text:#16211E; --ink:#0F3B30; --on-ink:#FFFFFF;
+  --muted:#65706B; --line:#E0E5E1; --soft:#E9EDE9; --sel:rgba(15,59,48,.06); --tile:#F2F4F1;
+  --p:#3E63DD; --g:#D48C0B; --l:#1C957A; --water:#3A93D8; --warn:#C2410C;
+  --band:#0F3B30; --band-ink:#F1F6F3; --band-muted:rgba(241,246,243,.68); --band-soft:rgba(255,255,255,.08); --band-line:rgba(255,255,255,.12);
+  --p-on:#9DB2FF; --g-on:#F4C25A; --l-on:#6EDDBB; --mint:#7FE0BD;
+  --tick-l:rgba(255,255,255,.34); --tick-s:rgba(255,255,255,.16);
+  --top-bg:rgba(242,244,241,.86);
+  --shadow:0 1px 2px rgba(16,40,32,.06),0 14px 34px -20px rgba(16,40,32,.28);
+  --cond:"Barlow Condensed","Arial Narrow","Roboto Condensed",sans-serif;
+  --emoji:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1311; --surface:#141E1B; --text:#E3EBE7; --ink:#A6E4CC; --on-ink:#0C1311;
+    --muted:#93A29C; --line:#23302C; --soft:#1B2723; --sel:rgba(166,228,204,.08); --tile:#1B2723;
+    --p:#8EA6FF; --g:#F2BC4B; --l:#5CD0AF; --water:#7CC4F5; --warn:#F28B5E;
+    --band:#12241F; --band-line:rgba(255,255,255,.1);
+    --top-bg:rgba(12,19,17,.86);
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 34px -20px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1311; --surface:#141E1B; --text:#E3EBE7; --ink:#A6E4CC; --on-ink:#0C1311;
+  --muted:#93A29C; --line:#23302C; --soft:#1B2723; --sel:rgba(166,228,204,.08); --tile:#1B2723;
+  --p:#8EA6FF; --g:#F2BC4B; --l:#5CD0AF; --water:#7CC4F5; --warn:#F28B5E;
+  --band:#12241F; --band-line:rgba(255,255,255,.1);
+  --top-bg:rgba(12,19,17,.86);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 34px -20px rgba(0,0,0,.7);
+}
+html{background:var(--bg);scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:1.0625rem;line-height:1.5}
+svg{max-width:100%}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--p);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1160px;margin:0 auto;padding:0 clamp(16px,4vw,36px)}
+.emo{font-family:var(--emoji);line-height:1}
+
+/* Boutons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:54px;padding:0 26px;border:0;border-radius:14px;background:var(--ink);color:var(--on-ink);font-weight:600;font-size:1.05rem;cursor:pointer;transition:transform .12s}
+.btn:active{transform:scale(.98)}
+.btn svg{width:18px;height:18px}
+.btn-ghost{display:inline-flex;align-items:center;justify-content:center;height:54px;padding:0 20px;border:1.5px solid var(--line);border-radius:14px;background:transparent;font-weight:600;cursor:pointer}
+.btn-ghost:hover{border-color:var(--muted)}
+.btn-ghost.sm{height:38px;padding:0 14px;border-radius:10px;font-size:.92rem;gap:6px}
+.btn-ghost.sm svg{width:15px;height:15px}
+
+/* ---------- En-tête ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--top-bg);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top-in{display:flex;align-items:center;gap:20px;height:68px}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--cond);font-weight:800;font-size:1.7rem;letter-spacing:.01em;line-height:1;color:var(--text);text-decoration:none;flex:none}
+.nav{display:flex;gap:2px;margin:0 auto;padding:4px;border-radius:14px;background:var(--soft)}
+.navbtn{display:flex;align-items:center;gap:8px;height:40px;padding:0 15px;border:0;border-radius:10px;background:none;color:var(--muted);font-weight:600;font-size:.97rem;cursor:pointer;white-space:nowrap}
+.navbtn svg{width:19px;height:19px;flex:none}
+.navbtn:hover{color:var(--text)}
+.navbtn[aria-selected="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.who{display:flex;align-items:center;gap:10px;min-width:0;margin-left:auto}
+.nav:not([hidden]) + .who{margin-left:0}
+.who-txt{color:var(--muted);font-size:.93rem;white-space:nowrap}
+@media (max-width:1060px){.who-txt{display:none}}
+@media (max-width:720px){
+  .top{position:static;-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--bg)}
+  .top-in{height:60px}
+  .dash{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .nav{position:fixed;z-index:40;left:0;right:0;bottom:0;margin:0;border-radius:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));background:var(--surface);box-shadow:0 -1px 0 var(--line);justify-content:space-around}
+  .navbtn{flex:1;flex-direction:column;gap:3px;height:56px;padding:0 4px;font-size:.73rem;justify-content:center}
+  .navbtn[aria-selected="true"]{box-shadow:none;background:var(--sel);color:var(--ink)}
+}
+
+/* ---------- Accueil et parcours guidé ---------- */
+.landing{padding:clamp(14px,3vw,32px) 0 0}
+.land-grid{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:22px;align-items:stretch}
+.land-grid.editing{grid-template-columns:minmax(0,720px);justify-content:center}
+.land-grid.editing .land-copy{display:none}
+@media (max-width:940px){.land-grid{grid-template-columns:1fr}}
+.land-copy{position:relative;overflow:hidden;background:var(--band);color:var(--band-ink);border-radius:28px;padding:clamp(26px,4vw,46px) clamp(24px,4vw,46px) clamp(46px,5vw,64px);display:flex;flex-direction:column}
+.land-copy h1{font-family:var(--cond);font-weight:700;font-size:clamp(2.6rem,5.2vw,4.3rem);line-height:.94;margin:0 0 16px;letter-spacing:-.005em;max-width:12ch}
+.land-copy > p{color:var(--band-muted);font-size:1.1rem;margin:0;max-width:40ch}
+.promise{list-style:none;padding:0;margin:28px 0 0;display:grid;gap:14px}
+.promise li{display:flex;gap:14px;align-items:center;font-weight:500}
+.promise .pi{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;background:var(--band-soft);font-size:1.15rem;flex:none}
+.preview{margin-top:auto;padding-top:34px}
+.pv{display:flex;align-items:center;gap:20px;padding:18px 20px;border-radius:22px;background:var(--band-soft);box-shadow:inset 0 0 0 1px var(--band-line)}
+.pv svg{width:96px;height:96px;flex:none;transform:rotate(-90deg)}
+.pv-k{font-family:var(--cond);font-weight:800;font-size:2.3rem;line-height:1}
+.pv-k small{font-family:"Barlow",sans-serif;font-size:.9rem;font-weight:500;color:var(--band-muted);margin-left:4px}
+.pv-m{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pv-m span{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:8px;background:rgba(255,255,255,.07);font-size:.84rem;font-weight:600}
+.pv-m i{width:8px;height:8px;border-radius:2px}
+.pv-l{display:block;font-size:.8rem;color:var(--band-muted);margin-bottom:4px}
+@media (max-width:940px){.preview{display:none}.land-copy{padding-bottom:44px}.promise{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}.promise li{font-size:.93rem;align-items:flex-start}.promise .pi{width:32px;height:32px;font-size:1rem}}
+@media (max-width:440px){.promise{grid-template-columns:1fr}}
+.ticks{position:absolute;left:0;right:0;bottom:0;height:18px;pointer-events:none;background-image:linear-gradient(90deg,var(--tick-l) 1px,transparent 1px),linear-gradient(90deg,var(--tick-s) 1px,transparent 1px);background-size:50px 16px,10px 7px;background-repeat:repeat-x;background-position:24px 100%,24px 100%}
+
+.card{background:var(--surface);border-radius:28px;padding:clamp(22px,4vw,40px);box-shadow:var(--shadow)}
+.wz-head{display:flex;align-items:center;gap:16px;margin-bottom:26px}
+.wz-count{margin:0;font-size:.9rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.wz-prog{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1}
+.wz-prog i{height:5px;border-radius:3px;background:var(--soft);transition:background .3s}
+.wz-prog i.on{background:var(--ink)}
+.wz-step h2{font-family:var(--cond);font-weight:700;font-size:clamp(2rem,4.5vw,2.6rem);line-height:1;margin:0 0 8px;outline:none}
+.wz-step .hint{color:var(--muted);margin:0 0 24px}
+.q{margin-bottom:26px}
+.q:last-child{margin-bottom:0}
+.qlbl{display:block;font-weight:600;margin-bottom:10px}
+.err{color:var(--warn);font-size:.88rem;margin:6px 0 0}
+.err:empty{display:none}
+.nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:520px){.nums{grid-template-columns:repeat(2,minmax(0,1fr))}.nums .num:first-child{grid-column:1/-1}}
+.num label{display:block;font-size:.9rem;color:var(--muted);margin-bottom:6px;font-weight:500}
+.numbox{position:relative}
+.numbox input{width:100%;height:64px;padding:0 50px 0 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--tile);color:var(--text);font-family:var(--cond);font-weight:700;font-size:1.9rem;font-variant-numeric:tabular-nums}
+.numbox input:focus-visible{outline:none;border-color:var(--ink);background:var(--surface)}
+.numbox input[aria-invalid="true"]{border-color:var(--warn)}
+.numbox span{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.more{margin-top:18px}
+.more summary{cursor:pointer;color:var(--ink);font-weight:600;font-size:.95rem;list-style:none;display:inline-flex;align-items:center;gap:8px}
+.more summary::-webkit-details-marker{display:none}
+.more summary::before{content:"+";display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:7px;background:var(--sel)}
+.more[open] summary::before{content:"−"}
+.more .numbox{max-width:220px;margin-top:12px}
+.more p{color:var(--muted);font-size:.9rem;margin:8px 0 0;max-width:52ch}
+
+.tiles{display:grid;gap:10px}
+.tiles.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.tiles.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tiles.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:620px){.tiles.c3{grid-template-columns:1fr}.tiles.c4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{position:relative;display:block;cursor:pointer}
+.tile input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.tb{position:relative;display:flex;flex-direction:column;gap:3px;height:100%;padding:16px 16px 15px;border:1.5px solid var(--line);border-radius:18px;background:var(--surface);transition:border-color .15s,background .15s}
+.tb .ti{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:13px;background:var(--tile);font-size:1.35rem;margin-bottom:10px;transition:background .15s}
+.tb b{font-weight:600;font-size:1.04rem;line-height:1.25}
+.tb small{color:var(--muted);font-size:.87rem;line-height:1.35}
+.tb::after{content:"";position:absolute;top:13px;right:13px;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);transition:all .15s}
+.tile:hover .tb{border-color:var(--muted)}
+.tile input:checked + .tb{border-color:var(--ink);background:var(--sel)}
+.tile input:checked + .tb .ti{background:var(--surface)}
+.tile input:checked + .tb::after{border-color:var(--ink);background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.tile input:focus-visible + .tb{outline:2px solid var(--p);outline-offset:2px}
+.tiles.row .tb{flex-direction:row;align-items:center;gap:12px;min-height:66px;padding-right:44px}
+.tiles.row .tb .ti{margin:0}
+.tiles.row .tb::after{top:50%;margin-top:-10px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;cursor:pointer}
+.chip input{position:absolute;opacity:0;inset:0;margin:0;width:100%;height:100%;cursor:pointer}
+.chip > span{display:flex;flex-direction:column;justify-content:center;min-height:46px;height:100%;padding:8px 16px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);font-weight:600;font-size:.97rem;line-height:1.2;transition:all .15s}
+.chip small{font-weight:400;color:var(--muted);font-size:.82rem;margin-top:2px}
+.chip:hover > span{border-color:var(--muted)}
+.chip input:checked + span{border-color:var(--ink);background:var(--ink);color:var(--on-ink)}
+.chip input:checked + span small{color:inherit;opacity:.8}
+.chip input:focus-visible + span{outline:2px solid var(--p);outline-offset:2px}
+.chips.wide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:520px){.chips.wide{grid-template-columns:1fr}}
+
+.stepper{display:inline-flex;align-items:center;gap:6px;padding:6px;border-radius:16px;background:var(--tile);border:1.5px solid var(--line)}
+.stepper button{width:48px;height:48px;border:0;border-radius:11px;background:var(--surface);font-size:1.6rem;line-height:1;cursor:pointer;box-shadow:0 0 0 1px var(--line)}
+.stepper button:disabled{opacity:.35;cursor:default}
+.stepper output{min-width:64px;text-align:center;font-family:var(--cond);font-weight:700;font-size:2.2rem;font-variant-numeric:tabular-nums;line-height:1}
+.stepper-note{display:inline-block;margin-left:14px;color:var(--muted)}
+.wz-nav{display:flex;justify-content:space-between;gap:12px;margin-top:34px;padding-top:22px;border-top:1px solid var(--line)}
+.wz-nav .btn{margin-left:auto;min-width:190px}
+@media (max-width:520px){.wz-nav .btn{flex:1;min-width:0}}
+
+/* ---------- Synthèse ---------- */
+.hero{position:relative;overflow:hidden;background:var(--band);color:var(--band-ink);padding:clamp(30px,5vw,56px) 0 clamp(52px,6vw,76px)}
+.plan-title{font-family:var(--cond);font-weight:700;font-size:clamp(2.2rem,5vw,3.6rem);line-height:.98;margin:0 0 10px;max-width:20ch;letter-spacing:-.005em}
+.plan-sub{color:var(--band-muted);margin:0 0 clamp(26px,4vw,40px);max-width:64ch}
+.hero-grid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(28px,6vw,88px);align-items:center}
+@media (max-width:760px){.hero-grid{grid-template-columns:1fr;justify-items:center}}
+.ring-wrap{position:relative;width:min(290px,72vw);aspect-ratio:1}
+.ring{width:100%;height:100%;transform:rotate(-90deg);display:block}
+.ring circle{fill:none;stroke-width:15}
+.ring .track{stroke:var(--band-soft)}
+.ring .arc{stroke-linecap:round;transition:stroke-dasharray 1s cubic-bezier(.2,.7,.2,1),stroke-dashoffset 1s cubic-bezier(.2,.7,.2,1)}
+.ring .arc.p{stroke:var(--p-on)}.ring .arc.g{stroke:var(--g-on)}.ring .arc.l{stroke:var(--l-on)}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring-center .big{font-family:var(--cond);font-weight:800;font-size:clamp(3.4rem,8vw,4.7rem);line-height:.88;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.ring-center small{color:var(--band-muted);font-size:.95rem;margin-top:8px}
+.macros{width:100%;display:grid;gap:24px}
+.mrow .mtop{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.mname{display:flex;align-items:center;gap:12px;font-weight:600;font-size:1.08rem}
+.mname .me{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;background:var(--band-soft);font-size:1.2rem}
+.mval{font-family:var(--cond);font-weight:800;font-size:2.6rem;line-height:1;font-variant-numeric:tabular-nums}
+.mval small{font-family:"Barlow",sans-serif;font-weight:500;font-size:1rem;color:var(--band-muted);margin-left:3px}
+.mtrack{height:7px;border-radius:4px;background:var(--band-soft);margin:12px 0 8px;overflow:hidden}
+.mtrack i{display:block;height:100%;width:0;border-radius:4px;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+.mrow.p .mtrack i{background:var(--p-on)}.mrow.g .mtrack i{background:var(--g-on)}.mrow.l .mtrack i{background:var(--l-on)}
+.msub{margin:0;color:var(--band-muted);font-size:.9rem}
+
+.below{padding-top:clamp(24px,4vw,40px)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:860px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.stats{grid-template-columns:1fr}}
+.stat{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:14px;align-items:start;background:var(--surface);border-radius:20px;padding:18px 20px;box-shadow:0 0 0 1px var(--line)}
+.stat .ic{grid-row:1/span 4;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;background:var(--sel);color:var(--ink)}
+.stat .ic svg{width:21px;height:21px}
+.stat .sl{font-size:.88rem;color:var(--muted)}
+.stat b{font-family:var(--cond);font-weight:700;font-size:2rem;line-height:1.05;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted);font-size:.85rem;line-height:1.35;margin-top:3px}
+.spark{display:block;width:100%;height:52px;margin-top:10px;overflow:visible}
+.glasses{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.glasses i{width:12px;height:17px;background:var(--water);clip-path:polygon(0 0,100% 0,84% 100%,16% 100%);opacity:.9}
+.glasses i.x{opacity:.28}
+.fib{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.fib span{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:8px;background:var(--tile);font-size:.82rem;color:var(--muted)}
+.alert{display:flex;gap:12px;margin:14px 0 0;padding:14px 16px;border-radius:16px;background:var(--surface);box-shadow:0 0 0 1px var(--line);font-size:.95rem}
+.alert .emo{font-size:1.15rem;margin-top:1px}
+.method{margin-top:14px;background:var(--surface);border-radius:20px;padding:16px 20px;box-shadow:0 0 0 1px var(--line)}
+.method summary{cursor:pointer;font-weight:600}
+.method p{margin:10px 0 0;color:var(--muted);font-size:.94rem;line-height:1.6;max-width:78ch}
+
+/* ---------- Vues secondaires ---------- */
+.view.pad{padding-top:clamp(26px,4vw,44px)}
+.vhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:28px}
+.vhead h2{font-family:var(--cond);font-weight:700;font-size:clamp(2.2rem,4.6vw,3.2rem);line-height:1;margin:0 0 8px}
+.vhead p{margin:0;color:var(--muted);max-width:58ch}
+
+/* Menu */
+.progress{min-width:260px;flex:0 1 340px;background:var(--surface);border-radius:18px;padding:14px 16px;box-shadow:0 0 0 1px var(--line)}
+.progress .pt{display:flex;justify-content:space-between;font-size:.92rem;gap:10px}
+.progress .pt b{font-variant-numeric:tabular-nums}
+.pbar{height:8px;border-radius:4px;background:var(--soft);margin-top:10px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--ink);border-radius:4px;transition:width .4s}
+.timeline{list-style:none;padding:0;margin:0;position:relative;--tc:62px;--tg:34px}
+@media (max-width:560px){.timeline{--tc:0px;--tg:0px}}
+.timeline::before{content:"";position:absolute;left:calc(var(--tc) + var(--tg)/2 - 1px);top:34px;bottom:46px;width:2px;background:var(--line)}
+.meal{display:grid;grid-template-columns:var(--tc) minmax(0,1fr);column-gap:var(--tg);position:relative;padding-bottom:16px}
+.meal::after{content:"";position:absolute;left:calc(var(--tc) + var(--tg)/2 - 7px);top:27px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:2px solid var(--ink);transition:background .2s}
+.meal.done::after{background:var(--ink)}
+.mtime{font-family:var(--cond);font-weight:700;font-size:1.4rem;text-align:right;padding-top:20px;font-variant-numeric:tabular-nums;line-height:1}
+@media (max-width:560px){.timeline::before,.meal::after,.mtime{display:none}.meal{display:block}.mbody{padding:16px}.memo{width:46px;height:46px;font-size:1.5rem}}
+.tin{display:none}
+@media (max-width:560px){.tin{display:inline}}
+.mbody{background:var(--surface);border-radius:24px;padding:18px 20px 16px;box-shadow:0 0 0 1px var(--line);transition:opacity .2s}
+.meal.done .mbody{opacity:.6}
+.mhead{display:flex;align-items:center;gap:14px}
+.memo{display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:16px;background:var(--tile);font-size:1.75rem;flex:none}
+.mtitle{flex:1;min-width:0}
+.mtitle h3{margin:0;font-size:1.18rem;font-weight:700;line-height:1.2}
+.mtitle > span{display:block;color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
+.check{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 13px 0 11px;border-radius:11px;border:1.5px solid var(--line);background:transparent;font-weight:600;font-size:.88rem;cursor:pointer;flex:none}
+.check svg{width:16px;height:16px}
+.check[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.items{list-style:none;padding:0;margin:14px 0 12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:26px}
+@media (max-width:680px){.items{grid-template-columns:1fr}}
+.items li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.98rem}
+.items .fi{display:flex;align-items:center;gap:10px;min-width:0}
+.fe{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:var(--tile);font-family:var(--emoji);font-size:1rem;flex:none}
+.items b{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.mstack{display:flex;gap:3px;height:6px;margin:2px 0 9px}
+.mstack i{display:block;height:100%;border-radius:3px;min-width:4px}
+.mstack .p{background:var(--p)}.mstack .g{background:var(--g)}.mstack .l{background:var(--l)}
+.mm{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.87rem;color:var(--muted);margin:0;font-variant-numeric:tabular-nums}
+.d{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
+.d.p{background:var(--p)}.d.g{background:var(--g)}.d.l{background:var(--l)}
+.swap{display:flex;gap:9px;align-items:flex-start;margin:12px 0 0;padding:10px 12px;border-radius:12px;background:var(--tile);font-size:.9rem;color:var(--muted)}
+.swap svg{width:16px;height:16px;flex:none;margin-top:2px;color:var(--ink)}
+.swap b{color:var(--text);font-weight:600}
+.daytot{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px;margin:6px 0 0 calc(var(--tc,62px) + var(--tg,34px));padding:16px 20px;border-radius:20px;background:var(--band);color:var(--band-ink);font-size:.93rem;font-variant-numeric:tabular-nums}
+.daytot b{font-family:var(--cond);font-size:1.6rem;font-weight:700}
+.daytot span{color:var(--band-muted)}
+.daytot .d.p{background:var(--p-on)}.daytot .d.g{background:var(--g-on)}.daytot .d.l{background:var(--l-on)}
+@media (max-width:560px){.daytot{margin-left:0}}
+.shop-h{display:flex;align-items:center;gap:12px;font-family:var(--cond);font-weight:700;font-size:2rem;margin:60px 0 6px;line-height:1}
+.shop-p{color:var(--muted);margin:0 0 20px}
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.shop section{background:var(--surface);border-radius:20px;padding:16px 18px 10px;box-shadow:0 0 0 1px var(--line)}
+.shop h4{display:flex;align-items:center;gap:8px;margin:0 0 6px;font-size:.95rem;font-weight:600}
+.shop ul{list-style:none;padding:0;margin:0}
+.shop li + li{border-top:1px solid var(--line)}
+.shop label{display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer;font-size:.97rem}
+.shop input{appearance:none;-webkit-appearance:none;width:20px;height:20px;border:1.5px solid var(--line);border-radius:6px;margin:0;flex:none;display:grid;place-content:center;cursor:pointer;background:var(--surface)}
+.shop input:checked{background:var(--ink);border-color:var(--ink)}
+.shop input:checked::after{content:"";width:9px;height:5px;border-left:2px solid var(--on-ink);border-bottom:2px solid var(--on-ink);transform:translate(0,-1px) rotate(-45deg)}
+.shop .nm{flex:1;display:flex;align-items:center;gap:8px}
+.shop b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.shop input:checked ~ .nm,.shop input:checked ~ b{text-decoration:line-through;color:var(--muted)}
+
+/* Micronutriments */
+.mlist{background:var(--surface);border-radius:24px;box-shadow:0 0 0 1px var(--line);overflow:hidden}
+.mgroup{display:flex;align-items:center;gap:10px;padding:13px 22px;background:var(--tile);font-weight:600;font-size:.9rem;color:var(--muted)}
+.mgroup + .micro{border-top:0}
+.micro{border-top:1px solid var(--line)}
+.micro summary{display:grid;grid-template-columns:44px minmax(0,1.5fr) 140px minmax(0,1.6fr) 22px;gap:18px;align-items:center;padding:16px 22px;cursor:pointer;list-style:none}
+.micro summary::-webkit-details-marker{display:none}
+.micro summary:hover{background:var(--sel)}
+.micro .memo{width:44px;height:44px;border-radius:14px;font-size:1.35rem}
+.micro .nm b{display:block;font-size:1.05rem}
+.micro .nm span{display:block;color:var(--muted);font-size:.9rem;line-height:1.4;margin-top:2px}
+.micro .tg{font-family:var(--cond);font-weight:700;font-size:1.8rem;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.micro .tg small{font-family:"Barlow",sans-serif;font-size:.85rem;font-weight:500;color:var(--muted)}
+.tops{display:flex;flex-wrap:wrap;gap:6px}
+.top1{display:inline-flex;gap:7px;align-items:center;padding:5px 10px 5px 6px;border-radius:10px;background:var(--tile);font-size:.86rem}
+.top1 .emo{font-size:.95rem}
+.top1 b{font-variant-numeric:tabular-nums;color:var(--ink)}
+.pl{position:relative;width:20px;height:20px;justify-self:end}
+.pl::before,.pl::after{content:"";position:absolute;left:3px;right:3px;top:9px;height:2px;background:var(--muted);border-radius:1px;transition:transform .2s}
+.pl::after{transform:rotate(90deg)}
+.micro[open] .pl::after{transform:rotate(0)}
+.src{padding:6px 22px 22px 84px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px 30px}
+.si{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:.94rem;align-items:baseline}
+.si small{color:var(--muted);font-size:.86rem}
+.si .sv{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.si .sb{grid-column:1/-1;height:6px;background:var(--soft);border-radius:3px;overflow:hidden}
+.si .sb i{display:block;height:100%;background:var(--ink);border-radius:3px}
+.src .note{grid-column:1/-1;margin:2px 0 0;font-size:.9rem;color:var(--muted);max-width:80ch}
+@media (max-width:860px){
+  .micro summary{grid-template-columns:44px minmax(0,1fr) auto;grid-template-areas:"em nm tg" "tops tops tops";row-gap:12px;padding:16px 18px}
+  .micro .memo{grid-area:em}.micro .nm{grid-area:nm}.micro .tg{grid-area:tg}.micro .tops{grid-area:tops}.micro .pl{display:none}
+  .src{padding:4px 18px 20px}
+}
+
+/* Objectifs */
+.goals{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.gbtn{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 16px 0 12px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);font-weight:600;cursor:pointer}
+.gbtn .emo{font-size:1.1rem}
+.gbtn:hover{border-color:var(--muted)}
+.gbtn[aria-selected="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.status{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;border-radius:20px;background:var(--band);color:var(--band-ink);margin:0 0 18px}
+.status .emo{font-size:1.4rem}
+.status p{margin:0;max-width:80ch}
+.status b{color:var(--mint)}
+.pgrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:880px){.pgrid{grid-template-columns:1fr}}
+.box{background:var(--surface);border-radius:24px;padding:clamp(18px,3vw,26px);box-shadow:0 0 0 1px var(--line)}
+.box h3{font-family:var(--cond);font-weight:700;font-size:1.75rem;margin:0 0 4px;line-height:1.1}
+.box .intro{color:var(--muted);margin:0 0 12px;max-width:62ch}
+.foods{list-style:none;padding:0;margin:0}
+.foods li{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:2px 14px;padding:13px 0;border-top:1px solid var(--line);align-items:start}
+.foods .fe{grid-row:1/span 2;width:40px;height:40px;border-radius:12px;font-size:1.25rem}
+.foods b{font-weight:600;align-self:center}
+.foods .qt{color:var(--muted);font-size:.88rem;text-align:right;align-self:center}
+.foods p{grid-column:2/-1;margin:0;color:var(--muted);font-size:.93rem;line-height:1.45}
+.ev{display:inline-block;font-size:.76rem;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--tile);margin-left:8px;vertical-align:1px;white-space:nowrap}
+.ev.s{color:var(--l)}.ev.m{color:var(--g)}.ev.f{color:var(--muted)}
+.lev h4{font-size:1.02rem;margin:0 0 6px}
+.lev + .lev{margin-top:24px}
+.lev ul{padding:0;margin:0;list-style:none}
+.lev li{padding:11px 0 11px 30px;position:relative;border-top:1px solid var(--line);font-size:.96rem;line-height:1.45}
+.lev li::before{content:"";position:absolute;left:0;top:13px;width:18px;height:18px;border-radius:6px;background:var(--sel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%231C957A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.lev.minus li::before{background:var(--sel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8h7' fill='none' stroke='%23C2410C' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.myth{display:flex;gap:10px;margin:20px 0 0;padding:12px 14px;border-radius:14px;background:var(--tile);font-size:.92rem;color:var(--muted)}
+.dht{margin-top:18px}
+.dgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:clamp(18px,3vw,40px);margin-top:14px}
+@media (max-width:880px){.dgrid{grid-template-columns:1fr}}
+.dgrid h4{margin:0 0 8px;font-size:1.02rem}
+.dgrid p{margin:0 0 10px}
+
+footer{margin-top:72px}
+footer .wrap{padding-top:24px;padding-bottom:36px;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+footer p{margin:0;max-width:80ch}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#" id="home">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="5" height="18" rx="1.5" fill="var(--p)"/><rect x="9.5" y="8" width="5" height="13" rx="1.5" fill="var(--g)"/><rect x="17" y="13" width="5" height="8" rx="1.5" fill="var(--l)"/></svg>
+      calibre
+    </a>
+    <nav class="nav" id="nav" role="tablist" aria-label="Ton plan" hidden>
+      <button type="button" class="navbtn" role="tab" id="t-synthese" data-view="synthese" aria-controls="v-synthese">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15 3.4A9 9 0 0 1 20.6 9H15z"/></svg>Synthèse</button>
+      <button type="button" class="navbtn" role="tab" id="t-menu" data-view="menu" aria-controls="v-menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v8a2 2 0 0 0 2 2v8M5 3v5M9 3v5M17 3c-2 0-3 2.5-3 6s1.5 4 3 4v8"/></svg>Menu</button>
+      <button type="button" class="navbtn" role="tab" id="t-micros" data-view="micros" aria-controls="v-micros">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8l7.8 4.6v9.2L12 21.2l-7.8-4.6V7.4z"/><circle cx="12" cy="12" r="2.6"/></svg>Micronutriments</button>
+      <button type="button" class="navbtn" role="tab" id="t-objectifs" data-view="objectifs" aria-controls="v-objectifs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>Objectifs</button>
+    </nav>
+    <div class="who" id="who" hidden>
+      <span class="who-txt" id="whoTxt"></span>
+      <button type="button" class="btn-ghost sm" id="editBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Modifier</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ================= ACCUEIL ET PARCOURS ================= -->
+<section class="landing" id="wizard" hidden>
+  <div class="wrap land-grid" id="landGrid">
+    <aside class="land-copy">
+      <h1>Ton plan nutrition sur mesure, en une minute.</h1>
+      <p>Quatre questions, et Calibre calcule tout pour toi.</p>
+      <ul class="promise">
+        <li><span class="pi emo" aria-hidden="true">🎯</span>Calories et macros au gramme près</li>
+        <li><span class="pi emo" aria-hidden="true">🍱</span>Un menu du jour et ta liste de courses</li>
+        <li><span class="pi emo" aria-hidden="true">🧂</span>12 micronutriments clés du sportif</li>
+        <li><span class="pi emo" aria-hidden="true">🧬</span>Hormones, sommeil, récupération : les bons aliments</li>
+      </ul>
+      <div class="preview" aria-hidden="true">
+        <div class="pv">
+          <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="11"/><circle cx="50" cy="50" r="40" fill="none" stroke="var(--p-on)" stroke-width="11" stroke-linecap="round" stroke-dasharray="66 251.3"/><circle cx="50" cy="50" r="40" fill="none" stroke="var(--g-on)" stroke-width="11" stroke-linecap="round" stroke-dasharray="104 251.3" stroke-dashoffset="-76"/><circle cx="50" cy="50" r="40" fill="none" stroke="var(--l-on)" stroke-width="11" stroke-linecap="round" stroke-dasharray="54 251.3" stroke-dashoffset="-190"/></svg>
+          <div>
+            <span class="pv-l">Exemple de plan</span>
+            <div class="pv-k">2 260<small>kcal par jour</small></div>
+            <div class="pv-m"><span><i style="background:var(--p-on)"></i>165 g</span><span><i style="background:var(--g-on)"></i>255 g</span><span><i style="background:var(--l-on)"></i>65 g</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="ticks"></div>
+    </aside>
+
+    <div class="card">
+      <div class="wz-head">
+        <p class="wz-count" id="wzCount">Étape 1 sur 4</p>
+        <div class="wz-prog" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      </div>
+      <form id="form" novalidate autocomplete="off">
+
+        <div class="wz-step" data-step="1">
+          <h2 tabindex="-1">Ton profil</h2>
+          <p class="hint">Ces mesures servent à estimer ton métabolisme de base.</p>
+          <div class="q">
+            <span class="qlbl" id="q-sexe">Sexe</span>
+            <div class="tiles c2 row" role="radiogroup" aria-labelledby="q-sexe">
+              <label class="tile"><input type="radio" name="sexe" value="H"><span class="tb"><span class="ti emo" aria-hidden="true">🙋‍♂️</span><b>Homme</b></span></label>
+              <label class="tile"><input type="radio" name="sexe" value="F"><span class="tb"><span class="ti emo" aria-hidden="true">🙋‍♀️</span><b>Femme</b></span></label>
+            </div>
+            <p class="err" id="err-sexe"></p>
+          </div>
+          <div class="q">
+            <div class="nums">
+              <div class="num"><label for="age">Âge</label><div class="numbox"><input id="age" name="age" type="text" inputmode="numeric" maxlength="2" aria-describedby="err-age"><span>ans</span></div><p class="err" id="err-age"></p></div>
+              <div class="num"><label for="taille">Taille</label><div class="numbox"><input id="taille" name="taille" type="text" inputmode="numeric" maxlength="3" aria-describedby="err-taille"><span>cm</span></div><p class="err" id="err-taille"></p></div>
+              <div class="num"><label for="poids">Poids</label><div class="numbox"><input id="poids" name="poids" type="text" inputmode="decimal" maxlength="5" aria-describedby="err-poids"><span>kg</span></div><p class="err" id="err-poids"></p></div>
+            </div>
+            <details class="more" id="moreMg">
+              <summary>Je connais mon taux de masse grasse</summary>
+              <div class="numbox"><input id="mg" name="mg" type="text" inputmode="decimal" maxlength="4" aria-label="Taux de masse grasse" aria-describedby="err-mg"><span>%</span></div>
+              <p class="err" id="err-mg"></p>
+              <p>Mesuré par impédancemètre, pince ou DEXA. Il rend le calcul du métabolisme plus précis.</p>
+            </details>
+          </div>
+        </div>
+
+        <div class="wz-step" data-step="2" hidden>
+          <h2 tabindex="-1">Ton rythme de vie</h2>
+          <p class="hint">En dehors du sport, ta journée ressemble plutôt à…</p>
+          <div class="tiles c3" role="radiogroup" aria-label="Rythme de vie">
+            <label class="tile"><input type="radio" name="metier" value="assis"><span class="tb"><span class="ti emo" aria-hidden="true">💻</span><b>Plutôt assis</b><small>Bureau, études, télétravail</small></span></label>
+            <label class="tile"><input type="radio" name="metier" value="debout"><span class="tb"><span class="ti emo" aria-hidden="true">🛍️</span><b>Souvent debout</b><small>Commerce, restauration, enseignement</small></span></label>
+            <label class="tile"><input type="radio" name="metier" value="physique"><span class="tb"><span class="ti emo" aria-hidden="true">📦</span><b>Très physique</b><small>BTP, logistique, livraison</small></span></label>
+          </div>
+        </div>
+
+        <div class="wz-step" data-step="3" hidden>
+          <h2 tabindex="-1">Ton entraînement</h2>
+          <p class="hint">Une moyenne sur une semaine classique suffit.</p>
+          <div class="q">
+            <span class="qlbl" id="q-seances">Séances par semaine</span>
+            <div class="stepper" role="group" aria-labelledby="q-seances">
+              <button type="button" data-delta="-1" aria-label="Une séance de moins">−</button>
+              <output id="seancesOut" aria-live="polite">3</output>
+              <button type="button" data-delta="1" aria-label="Une séance de plus">+</button>
+            </div>
+            <span class="stepper-note" id="seancesNote"></span>
+            <input type="hidden" name="seances" id="seances">
+          </div>
+          <div id="trainDetails">
+            <div class="q">
+              <span class="qlbl" id="q-duree">Durée moyenne d’une séance</span>
+              <div class="chips" role="radiogroup" aria-labelledby="q-duree">
+                <label class="chip"><input type="radio" name="duree" value="30"><span>30 min</span></label>
+                <label class="chip"><input type="radio" name="duree" value="45"><span>45 min</span></label>
+                <label class="chip"><input type="radio" name="duree" value="60"><span>1 h</span></label>
+                <label class="chip"><input type="radio" name="duree" value="75"><span>1 h 15</span></label>
+                <label class="chip"><input type="radio" name="duree" value="90"><span>1 h 30</span></label>
+                <label class="chip"><input type="radio" name="duree" value="120"><span>2 h</span></label>
+              </div>
+            </div>
+            <div class="q">
+              <span class="qlbl" id="q-sport">Discipline principale</span>
+              <div class="tiles c4" role="radiogroup" aria-labelledby="q-sport">
+                <label class="tile"><input type="radio" name="sport" value="muscu"><span class="tb"><span class="ti emo" aria-hidden="true">🏋️</span><b>Musculation</b></span></label>
+                <label class="tile"><input type="radio" name="sport" value="cardio"><span class="tb"><span class="ti emo" aria-hidden="true">🏃</span><b>Endurance</b><small>Course, vélo, natation</small></span></label>
+                <label class="tile"><input type="radio" name="sport" value="collectif"><span class="tb"><span class="ti emo" aria-hidden="true">⚽</span><b>Sports co et combat</b></span></label>
+                <label class="tile"><input type="radio" name="sport" value="hiit"><span class="tb"><span class="ti emo" aria-hidden="true">⚡</span><b>CrossFit et HIIT</b></span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wz-step" data-step="4" hidden>
+          <h2 tabindex="-1">Ton objectif</h2>
+          <p class="hint">Tu pourras en changer à tout moment.</p>
+          <div class="q">
+            <div class="tiles c2" role="radiogroup" aria-label="Objectif">
+              <label class="tile"><input type="radio" name="objectif" value="seche"><span class="tb"><span class="ti emo" aria-hidden="true">🔥</span><b>Sèche</b><small>Perdre du gras en préservant le muscle</small></span></label>
+              <label class="tile"><input type="radio" name="objectif" value="recompo"><span class="tb"><span class="ti emo" aria-hidden="true">🔄</span><b>Recomposition</b><small>Affiner et construire en même temps</small></span></label>
+              <label class="tile"><input type="radio" name="objectif" value="maintien"><span class="tb"><span class="ti emo" aria-hidden="true">⚖️</span><b>Maintien</b><small>Stabiliser ton poids et ta forme</small></span></label>
+              <label class="tile"><input type="radio" name="objectif" value="masse"><span class="tb"><span class="ti emo" aria-hidden="true">💪</span><b>Prise de masse</b><small>Construire du muscle</small></span></label>
+            </div>
+          </div>
+          <div class="q" id="rythmeQ">
+            <span class="qlbl" id="q-rythme">Intensité</span>
+            <div class="chips wide" role="radiogroup" aria-labelledby="q-rythme">
+              <label class="chip"><input type="radio" name="rythme" value="douce"><span><span data-r="douce"></span><small data-rs="douce"></small></span></label>
+              <label class="chip"><input type="radio" name="rythme" value="standard"><span><span data-r="standard"></span><small data-rs="standard"></small></span></label>
+              <label class="chip"><input type="radio" name="rythme" value="rapide"><span><span data-r="rapide"></span><small data-rs="rapide"></small></span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="wz-nav">
+          <button type="button" class="btn-ghost" id="prevBtn">Retour</button>
+          <button type="submit" class="btn" id="nextBtn">Continuer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TABLEAU DE BORD ================= -->
+<section class="dash" id="dash" hidden>
+
+  <div class="view" id="v-synthese" role="tabpanel" aria-labelledby="t-synthese">
+    <div class="hero">
+      <div class="wrap">
+        <h1 class="plan-title" id="planTitle"></h1>
+        <p class="plan-sub" id="planSub"></p>
+        <div class="hero-grid">
+          <div class="ring-wrap">
+            <svg class="ring" viewBox="0 0 200 200" role="img" id="ringSvg" aria-label="Répartition des calories">
+              <circle class="track" cx="100" cy="100" r="84"/>
+              <circle class="arc p" cx="100" cy="100" r="84"/>
+              <circle class="arc g" cx="100" cy="100" r="84"/>
+              <circle class="arc l" cx="100" cy="100" r="84"/>
+            </svg>
+            <div class="ring-center"><span class="big" id="kcal">0</span><small>kcal par jour</small></div>
+          </div>
+          <div class="macros">
+            <div class="mrow p"><div class="mtop"><span class="mname"><span class="me emo" aria-hidden="true">🥩</span>Protéines</span><span class="mval"><span id="pG">0</span><small>g</small></span></div><div class="mtrack"><i id="pBar"></i></div><p class="msub" id="pM"></p></div>
+            <div class="mrow g"><div class="mtop"><span class="mname"><span class="me emo" aria-hidden="true">🍚</span>Glucides</span><span class="mval"><span id="gG">0</span><small>g</small></span></div><div class="mtrack"><i id="gBar"></i></div><p class="msub" id="gM"></p></div>
+            <div class="mrow l"><div class="mtop"><span class="mname"><span class="me emo" aria-hidden="true">🥑</span>Lipides</span><span class="mval"><span id="lG">0</span><small>g</small></span></div><div class="mtrack"><i id="lBar"></i></div><p class="msub" id="lM"></p></div>
+          </div>
+        </div>
+      </div>
+      <div class="ticks"></div>
+    </div>
+
+    <div class="wrap below">
+      <div class="stats">
+        <div class="stat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21c-3.9 0-7-2.9-7-6.6 0-3.2 2.4-5.3 3.6-7.6.4 1.6 1.4 2.8 2.4 3.3C11 7 12.6 4.6 15 3c-.3 2.6.8 4.4 2.2 6.1C18.4 10.6 19 12.2 19 14.4 19 18.1 15.9 21 12 21z"/></svg></span><span class="sl">Métabolisme de base</span><b id="sBmr"></b><small>Ce que ton corps brûle au repos complet</small></div>
+        <div class="stat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg></span><span class="sl">Dépense énergétique totale</span><b id="sTdee"></b><small>Vie quotidienne et entraînement compris</small></div>
+        <div class="stat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M12 4v16" id="adjIcon"/></svg></span><span class="sl" id="sAdjL">Ajustement</span><b id="sAdj"></b><small id="sAdjS"></small></div>
+        <div class="stat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19h18M5 15l4-4 4 3 6-7"/></svg></span><span class="sl">Projection à 8 semaines</span><b id="sProj"></b><small id="sProjS"></small><svg class="spark" id="spark" viewBox="0 0 220 52" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+        <div class="stat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/></svg></span><span class="sl">Hydratation</span><b id="sEau"></b><small id="sEauS"></small><div class="glasses" id="glasses" aria-hidden="true"></div></div>
+        <div class="stat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14zM5 19l7-7"/></svg></span><span class="sl">Fibres</span><b id="sFib"></b><small>Pour la satiété et le microbiote</small><div class="fib"><span><i class="emo">🥦</i>légumes</span><span><i class="emo">🍎</i>fruits</span><span><i class="emo">🌾</i>céréales complètes</span></div></div>
+      </div>
+      <div id="alerts"></div>
+      <details class="method">
+        <summary>La méthode de calcul</summary>
+        <p id="methodTxt"></p>
+      </details>
+    </div>
+  </div>
+
+  <div class="view pad wrap" id="v-menu" role="tabpanel" aria-labelledby="t-menu" hidden>
+    <div class="vhead">
+      <div>
+        <h2>Ton menu du jour</h2>
+        <p>Calculé au gramme sur tes macros. Viande, riz et pâtes sont pesés crus. Valide chaque repas pour suivre ta journée.</p>
+      </div>
+      <div class="progress">
+        <div class="pt"><span id="progTxt"></span><b id="progKcal"></b></div>
+        <div class="pbar"><i id="progBar"></i></div>
+      </div>
+    </div>
+    <ol class="timeline" id="meals"></ol>
+    <div class="daytot" id="dayTot"></div>
+    <h3 class="shop-h"><span class="emo" aria-hidden="true">🛒</span>Liste de courses pour 7 jours</h3>
+    <p class="shop-p">Les quantités exactes pour suivre ce menu toute la semaine. Coche au fur et à mesure dans le magasin.</p>
+    <div class="shop" id="shop"></div>
+  </div>
+
+  <div class="view pad wrap" id="v-micros" role="tabpanel" aria-labelledby="t-micros" hidden>
+    <div class="vhead"><div>
+      <h2>Tes micronutriments</h2>
+      <p>Les minéraux et vitamines clés pour un sportif, calibrés sur ton profil. Le pourcentage indique la part de ton besoin quotidien couverte par une portion.</p>
+    </div></div>
+    <div class="mlist" id="microList"></div>
+  </div>
+
+  <div class="view pad wrap" id="v-objectifs" role="tabpanel" aria-labelledby="t-objectifs" hidden>
+    <div class="vhead"><div>
+      <h2>Objectifs ciblés</h2>
+      <p>Les aliments qui font la différence pour un objectif précis, avec le niveau de preuve scientifique de chaque conseil.</p>
+    </div></div>
+    <div class="goals" role="tablist" aria-label="Choisis un objectif" id="goals"></div>
+    <div id="goalPanel" role="tabpanel" tabindex="0"></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap"><p>Calibre fournit des estimations destinées aux adultes en bonne santé, sur la base des références de l’ANSES et de l’EFSA. Il ne remplace pas un avis médical : en cas de pathologie, de grossesse ou de traitement, fais-toi accompagner par un médecin ou un diététicien.</p></div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var fmt = new Intl.NumberFormat('fr-FR', {maximumFractionDigits:0});
+var fmt1 = new Intl.NumberFormat('fr-FR', {minimumFractionDigits:1, maximumFractionDigits:1});
+var fmtV = new Intl.NumberFormat('fr-FR', {maximumFractionDigits:1});
+function r5(x){ return Math.round(x/5)*5; }
+function r10(x){ return Math.round(x/10)*10; }
+function $(s){ return document.querySelector(s); }
+function $$(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
+var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+function scrollTop(){ try { window.scrollTo(0, 0); } catch(e) {} }
+function emo(e){ return '<span class="emo" aria-hidden="true">' + e + '</span>'; }
+
+var KEY = 'calibre-v2', KEY_OLD = 'calibre-v1', KEY_DAY = 'calibre-jour';
+var DEFAULTS = {sexe:'', age:'', taille:'', poids:'', mg:'', metier:'assis', seances:'3', duree:'60', sport:'muscu', objectif:'maintien', rythme:'standard'};
+function load(){
+  try {
+    var raw = localStorage.getItem(KEY) || localStorage.getItem(KEY_OLD);
+    if (raw) return Object.assign({}, DEFAULTS, JSON.parse(raw));
+  } catch(e) {}
+  return Object.assign({}, DEFAULTS);
+}
+function save(s){ try { localStorage.setItem(KEY, JSON.stringify(s)); } catch(e) {} }
+
+var form = $('#form');
+function readForm(){
+  var s = {};
+  Object.keys(DEFAULTS).forEach(function(k){
+    var el = form.elements.namedItem(k);
+    s[k] = el ? el.value : DEFAULTS[k];
+  });
+  return s;
+}
+function writeForm(s){
+  Object.keys(DEFAULTS).forEach(function(k){
+    var el = form.elements.namedItem(k);
+    if (!el) return;
+    if (el.length !== undefined && !el.tagName) {
+      Array.prototype.forEach.call(el, function(r){ r.checked = (r.value === String(s[k])); });
+      if (k !== 'sexe' && !Array.prototype.some.call(el, function(r){ return r.checked; })) {
+        Array.prototype.forEach.call(el, function(r){ r.checked = (r.value === DEFAULTS[k]); });
+      }
+    } else { el.value = s[k] == null ? '' : s[k]; }
+  });
+  if (String(s.mg || '').trim() !== '') $('#moreMg').open = true;
+}
+
+/* ================= Calcul ================= */
+function num(v){ var n = parseFloat(String(v == null ? '' : v).replace(',', '.').trim()); return isFinite(n) ? n : NaN; }
+function check(s){
+  var e = {};
+  if (s.sexe !== 'H' && s.sexe !== 'F') e.sexe = 'Choisis une option pour lancer le calcul.';
+  var age = num(s.age), h = num(s.taille), w = num(s.poids);
+  if (!(age >= 18 && age <= 90)) e.age = 'Entre 18 et 90 ans. Calibre est conçu pour les adultes.';
+  if (!(h >= 130 && h <= 230)) e.taille = 'Indique ta taille en centimètres, entre 130 et 230.';
+  if (!(w >= 35 && w <= 250)) e.poids = 'Indique ton poids en kilos, entre 35 et 250.';
+  var mgTxt = String(s.mg || '').trim();
+  if (mgTxt !== '' && !(num(mgTxt) >= 3 && num(mgTxt) <= 60)) e.mg = 'Entre 3 et 60 %, ou laisse le champ vide.';
+  return e;
+}
+function calc(s){
+  var age = num(s.age), h = num(s.taille), w = num(s.poids);
+  var mgTxt = String(s.mg || '').trim();
+  var mg = mgTxt === '' ? null : num(mgTxt);
+  var male = s.sexe === 'H';
+  var seances = Math.max(0, Math.min(12, parseInt(s.seances, 10) || 0));
+  var duree = parseInt(s.duree, 10) || 60;
+  var obj = s.objectif || 'maintien', pace = s.rythme || 'standard';
+  var lbm = mg !== null ? w*(1 - mg/100) : null;
+  var bmr = lbm !== null ? 370 + 21.6*lbm : 10*w + 6.25*h - 5*age + (male ? 5 : -161);
+  var base = {assis:1.3, debout:1.45, physique:1.65}[s.metier] || 1.3;
+  var met = {muscu:6, cardio:8.5, collectif:7.5, hiit:8}[s.sport] || 6;
+  var sportDay = seances > 0 ? (met - 1)*3.5*w/200*duree*seances/7 : 0;
+  var tdee = bmr*base + sportDay;
+  var ADJ = {seche:{douce:-.15, standard:-.20, rapide:-.25}, masse:{douce:.07, standard:.12, rapide:.18}};
+  var pct = 0;
+  if (obj === 'seche' || obj === 'masse') pct = ADJ[obj][pace] !== undefined ? ADJ[obj][pace] : ADJ[obj].standard;
+  else if (obj === 'recompo') pct = -.05;
+  var kcal = tdee*(1 + pct);
+  var floor = Math.max(bmr, male ? 1500 : 1200), floored = false;
+  if (kcal < floor) { kcal = floor; floored = true; }
+  kcal = r10(kcal);
+  /* Protéines : 2 g par kilo de poids de corps, 2,2 g en sèche et en recomposition */
+  var protK = {seche:2.2, recompo:2.2, maintien:2, masse:2}[obj] || 2;
+  var prot = w*protK, capped = false;
+  if (prot > kcal*.40/4) { prot = kcal*.40/4; capped = true; }
+  var hm = h/100, bmi = w/(hm*hm), refW = w;
+  if (lbm === null && bmi > 27) { var w25 = 25*hm*hm; refW = w25 + 0.25*(w - w25); }
+  var fat = refW*({seche:.8, recompo:.9, maintien:1, masse:1}[obj] || 1);
+  fat = Math.min(Math.max(fat, kcal*.25/9), kcal*.35/9);
+  var carbs = (kcal - prot*4 - fat*9)/4;
+  if (carbs < 60) fat = Math.max(kcal*.22/9, fat - (60 - carbs)*4/9);
+  prot = r5(prot); fat = r5(fat);
+  carbs = Math.max(0, r5((kcal - prot*4 - fat*9)/4));
+  var hoursWeek = seances*duree/60;
+  return {
+    male:male, age:age, h:h, w:w, mg:mg, lbm:lbm, bmr:bmr, tdee:tdee, kcal:kcal, floored:floored,
+    pct:pct, obj:obj, pace:pace, prot:prot, protK:protK, capped:capped, fat:fat, carbs:carbs,
+    kcalMacros: prot*4 + carbs*4 + fat*9, seances:seances, duree:duree, hoursWeek:hoursWeek,
+    metier:s.metier, sport:s.sport,
+    fibres: Math.min(50, Math.max(25, Math.round(kcal/1000*14))),
+    eauRepos: w*0.035, eauTrain: w*0.035 + duree/60*0.6,
+    weekly: (kcal - tdee)*7/7700
+  };
+}
+
+/* ================= Parcours guidé ================= */
+var step = 1, editing = false, lastR = null;
+var RYTHME = {
+  seche:{douce:['Progressive','−15 % de ta dépense'], standard:['Modérée','−20 %, le meilleur compromis'], rapide:['Intensive','−25 %, 12 semaines maximum']},
+  masse:{douce:['Progressive','+7 %, gain de gras minimal'], standard:['Modérée','+12 %, le meilleur compromis'], rapide:['Intensive','+18 %, plus rapide, plus de gras']}
+};
+var GOAL_LABEL = {seche:'Sèche', recompo:'Recomposition', maintien:'Maintien', masse:'Prise de masse'};
+var METIER_LABEL = {assis:'plutôt assis au quotidien', debout:'souvent debout au quotidien', physique:'métier physique'};
+var SPORT_LABEL = {muscu:'musculation', cardio:'endurance', collectif:'sports co et combat', hiit:'CrossFit et HIIT'};
+
+function syncWizard(){
+  var s = readForm();
+  var n = parseInt(s.seances, 10) || 0;
+  $('#seancesOut').textContent = n;
+  $('#seancesNote').textContent = n === 0 ? 'pas de sport pour l’instant' : (n > 1 ? 'séances' : 'séance');
+  $('[data-delta="-1"]').disabled = n <= 0;
+  $('[data-delta="1"]').disabled = n >= 12;
+  $('#trainDetails').hidden = n === 0;
+  var showR = s.objectif === 'seche' || s.objectif === 'masse';
+  $('#rythmeQ').hidden = !showR;
+  if (showR) {
+    Object.keys(RYTHME[s.objectif]).forEach(function(k){
+      $('[data-r="' + k + '"]').textContent = RYTHME[s.objectif][k][0];
+      $('[data-rs="' + k + '"]').textContent = RYTHME[s.objectif][k][1];
+    });
+  }
+}
+function goStep(n, focus){
+  step = n;
+  $$('.wz-step').forEach(function(el){ el.hidden = Number(el.getAttribute('data-step')) !== n; });
+  $$('.wz-prog i').forEach(function(i, idx){ i.classList.toggle('on', idx < n); });
+  $('#wzCount').textContent = 'Étape ' + n + ' sur 4';
+  $('#prevBtn').hidden = n === 1 && !editing;
+  $('#prevBtn').textContent = (n === 1 && editing) ? 'Annuler' : 'Retour';
+  $('#nextBtn').textContent = n < 4 ? 'Continuer' : (editing ? 'Mettre à jour mon plan' : 'Générer mon plan');
+  syncWizard();
+  if (focus) { var h = $('.wz-step[data-step="' + n + '"] h2'); if (h) h.focus(); }
+}
+function showErrors(e){
+  ['sexe','age','taille','poids','mg'].forEach(function(k){
+    var p = $('#err-' + k); if (p) p.textContent = e[k] || '';
+    var inp = $('#' + k); if (inp) { if (e[k]) inp.setAttribute('aria-invalid', 'true'); else inp.removeAttribute('aria-invalid'); }
+  });
+  if (e.mg) $('#moreMg').open = true;
+}
+function validateStep(n){
+  if (n !== 1) return true;
+  var e = check(readForm());
+  showErrors(e);
+  var first = ['sexe','age','taille','poids','mg'].filter(function(k){ return e[k]; })[0];
+  if (first) {
+    var el = first === 'sexe' ? form.querySelector('input[name="sexe"]') : $('#' + first);
+    if (el) el.focus();
+    return false;
+  }
+  return true;
+}
+function openWizard(isEdit){
+  editing = !!isEdit;
+  $('#landGrid').classList.toggle('editing', editing);
+  $('#dash').hidden = true; $('#who').hidden = true; $('#nav').hidden = true; $('#wizard').hidden = false;
+  showErrors({});
+  goStep(1, false);
+  scrollTop();
+}
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  if (!validateStep(step)) return;
+  if (step < 4) { goStep(step + 1, true); scrollTop(); return; }
+  var s = readForm();
+  save(s);
+  openDash(s);
+});
+$('#prevBtn').addEventListener('click', function(){
+  if (step === 1 && editing) { writeForm(load()); openDash(load()); return; }
+  goStep(Math.max(1, step - 1), true);
+});
+form.addEventListener('change', syncWizard);
+$$('.stepper button').forEach(function(b){
+  b.addEventListener('click', function(){
+    var inp = $('#seances');
+    var n = Math.max(0, Math.min(12, (parseInt(inp.value, 10) || 0) + Number(b.getAttribute('data-delta'))));
+    inp.value = n;
+    syncWizard();
+  });
+});
+$('#editBtn').addEventListener('click', function(){ openWizard(true); });
+$('#home').addEventListener('click', function(e){ e.preventDefault(); if (lastR && $('#wizard').hidden) setView('synthese'); });
+
+/* ================= Tableau de bord ================= */
+var VIEWS = ['synthese','menu','micros','objectifs'], view = 'synthese';
+function setView(v, focusTab){
+  view = v;
+  $$('.navbtn').forEach(function(b){
+    var on = b.getAttribute('data-view') === v;
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+    b.tabIndex = on ? 0 : -1;
+    if (on && focusTab) b.focus();
+  });
+  VIEWS.forEach(function(id){ $('#v-' + id).hidden = id !== v; });
+  scrollTop();
+}
+$$('.navbtn').forEach(function(b){ b.addEventListener('click', function(){ setView(b.getAttribute('data-view')); }); });
+$('#nav').addEventListener('keydown', function(e){
+  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+  var i = VIEWS.indexOf(view);
+  i = (i + (e.key === 'ArrowRight' ? 1 : VIEWS.length - 1)) % VIEWS.length;
+  setView(VIEWS[i], true);
+  e.preventDefault();
+});
+function openDash(s){
+  var r = calc(s);
+  lastR = r;
+  $('#wizard').hidden = true; $('#dash').hidden = false; $('#who').hidden = false; $('#nav').hidden = false;
+  $('#whoTxt').textContent = (r.male ? 'Homme' : 'Femme') + ', ' + r.age + ' ans, ' + fmtV.format(r.w) + ' kg';
+  renderSynthese(r); renderMenu(r); renderMicros(r); renderGoals();
+  setView('synthese');
+}
+
+function animateNum(el, to){
+  var from = parseInt((el.textContent || '0').replace(/\D/g, ''), 10) || 0;
+  el._tok = (el._tok || 0) + 1;
+  var tok = el._tok;
+  if (reduceMotion || from === to || typeof requestAnimationFrame !== 'function') { el.textContent = fmt.format(to); return; }
+  var t0 = null, dur = 1000;
+  function stepA(t){
+    if (el._tok !== tok) return;
+    if (t0 === null) t0 = t;
+    var k = Math.min(1, (t - t0)/dur), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = fmt.format(Math.round(from + (to - from)*e));
+    if (k < 1) requestAnimationFrame(stepA);
+  }
+  requestAnimationFrame(stepA);
+}
+var C = 2*Math.PI*84;
+function setRing(shares){
+  var arcs = $$('.ring .arc'), gap = 18, off = 0;
+  shares.forEach(function(sh, i){
+    var len = Math.max(0.01, C*sh - gap);
+    arcs[i].style.strokeDasharray = len + ' ' + C;
+    arcs[i].style.strokeDashoffset = String(-(off + gap/2));
+    off += C*sh;
+  });
+}
+function renderSpark(r){
+  var W = 220, H = 52, pad = 6, w0 = r.w, w1 = r.w + r.weekly*8;
+  var span = Math.max(Math.abs(w1 - w0), 0.5);
+  var lo = Math.min(w0, w1) - span*0.25, hi = Math.max(w0, w1) + span*0.25;
+  function y(v){ return pad + (H - 2*pad)*(1 - (v - lo)/(hi - lo)); }
+  var pts = [];
+  for (var i = 0; i <= 8; i++) pts.push([pad + (W - 2*pad)*i/8, y(w0 + r.weekly*i)]);
+  var d = pts.map(function(p, i){ return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
+  var area = d + ' L' + pts[8][0].toFixed(1) + ' ' + (H - 1) + ' L' + pts[0][0].toFixed(1) + ' ' + (H - 1) + ' Z';
+  var ticks = '';
+  for (var t = 0; t <= 8; t++) ticks += '<line x1="' + pts[t][0].toFixed(1) + '" x2="' + pts[t][0].toFixed(1) + '" y1="' + (H - 4) + '" y2="' + H + '" stroke="var(--line)" stroke-width="1.5"/>';
+  $('#spark').innerHTML = '<path d="' + area + '" fill="var(--sel)"/>' + ticks +
+    '<path d="' + d + '" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>' +
+    '<circle cx="' + pts[0][0] + '" cy="' + pts[0][1] + '" r="3.5" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>' +
+    '<circle cx="' + pts[8][0] + '" cy="' + pts[8][1] + '" r="4.5" fill="var(--ink)"/>';
+}
+function renderSynthese(r){
+  var pk = r.prot*4, gk = r.carbs*4, lk = r.fat*9, T = r.kcalMacros || 1;
+  var pp = Math.round(pk/T*100), gp = Math.round(gk/T*100), lp = 100 - pp - gp;
+  var name = RYTHME[r.obj] ? RYTHME[r.obj][r.pace][0].toLowerCase() : '';
+  var title;
+  if (r.obj === 'seche') title = 'Sèche ' + name + ' : environ −' + fmt1.format(Math.abs(r.weekly)) + ' kg par semaine.';
+  else if (r.obj === 'masse') title = 'Prise de masse ' + name + ' : environ +' + fmt1.format(Math.abs(r.weekly)) + ' kg par semaine.';
+  else if (r.obj === 'recompo') title = 'Recomposition : moins de gras, plus de muscle.';
+  else title = 'Maintien : tu manges l’équivalent de ta dépense.';
+  $('#planTitle').textContent = title;
+  var sub = (r.male ? 'Homme' : 'Femme') + ' de ' + r.age + ' ans, ' + fmtV.format(r.w) + ' kg pour ' + fmt.format(r.h) + ' cm, ' + METIER_LABEL[r.metier];
+  sub += r.seances > 0 ? ', ' + SPORT_LABEL[r.sport] + ' ' + r.seances + ' fois par semaine.' : ', sans entraînement pour l’instant.';
+  $('#planSub').textContent = sub;
+
+  setRing([0.0001, 0.0001, 0.0001]);
+  var apply = function(){ setRing([pk/T, gk/T, lk/T]); };
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(function(){ requestAnimationFrame(apply); }); else apply();
+  $('#ringSvg').setAttribute('aria-label', 'Répartition des calories : protéines ' + pp + ' %, glucides ' + gp + ' %, lipides ' + lp + ' %');
+  ['#kcal','#pG','#gG','#lG'].forEach(function(id){ $(id).textContent = '0'; });
+  animateNum($('#kcal'), r.kcal); animateNum($('#pG'), r.prot); animateNum($('#gG'), r.carbs); animateNum($('#lG'), r.fat);
+  ['#pBar','#gBar','#lBar'].forEach(function(id){ $(id).style.width = '0'; });
+  setTimeout(function(){ $('#pBar').style.width = pp + '%'; $('#gBar').style.width = gp + '%'; $('#lBar').style.width = lp + '%'; }, 40);
+  $('#pM').textContent = fmt1.format(r.prot/r.w) + ' g par kilo de poids de corps, ' + pp + ' % des calories';
+  $('#gM').textContent = fmt1.format(r.carbs/r.w) + ' g par kilo, ' + gp + ' % des calories';
+  $('#lM').textContent = fmt1.format(r.fat/r.w) + ' g par kilo, ' + lp + ' % des calories';
+
+  $('#sBmr').textContent = fmt.format(r10(r.bmr)) + ' kcal';
+  $('#sTdee').textContent = fmt.format(r10(r.tdee)) + ' kcal';
+  var diff = r.kcal - r10(r.tdee);
+  var sign = diff > 0 ? '+' : (diff < 0 ? '−' : '');
+  $('#sAdjL').textContent = diff < 0 ? 'Déficit quotidien' : (diff > 0 ? 'Surplus quotidien' : 'Équilibre');
+  $('#adjIcon').setAttribute('d', diff < 0 ? 'M5 12h14' : (diff > 0 ? 'M5 12h14M12 5v14' : 'M5 9.5h14M5 14.5h14'));
+  $('#sAdj').textContent = sign + fmt.format(Math.abs(diff)) + ' kcal';
+  $('#sAdjS').textContent = r.floored ? 'Limité par le plancher de sécurité' : (r.pct === 0 ? 'Apport égal à ta dépense' : (r.pct < 0 ? '−' : '+') + Math.round(Math.abs(r.pct)*100) + ' % de ta dépense totale');
+
+  if (r.obj === 'maintien') { $('#sProj').textContent = 'Stable'; $('#sProjS').textContent = 'Ton poids reste autour de ' + fmtV.format(r.w) + ' kg'; }
+  else {
+    $('#sProj').textContent = '≈ ' + fmt1.format(r.w + r.weekly*8) + ' kg';
+    $('#sProjS').textContent = r.obj === 'recompo' ? 'Suis ton tour de taille plutôt que la balance' : 'En partant de ' + fmtV.format(r.w) + ' kg, si tu suis le plan';
+  }
+  renderSpark(r);
+
+  $('#sEau').textContent = fmt1.format(r.eauRepos) + ' L';
+  var base = Math.round(r.eauRepos/0.25), extra = r.seances > 0 ? Math.max(0, Math.round((r.eauTrain - r.eauRepos)/0.25)) : 0;
+  $('#sEauS').textContent = base + ' verres de 25 cl' + (extra ? ', ' + extra + ' de plus les jours d’entraînement' : ' par jour');
+  var gl = '';
+  for (var i = 0; i < Math.min(base, 24); i++) gl += '<i></i>';
+  for (var j = 0; j < Math.min(extra, 8); j++) gl += '<i class="x"></i>';
+  $('#glasses').innerHTML = gl;
+  $('#sFib').textContent = r.fibres + ' g';
+
+  var al = [];
+  if (r.floored) al.push(['🛡️','Ton apport est bloqué à ' + fmt.format(r.kcal) + ' kcal : en dessous, tu perdrais du muscle et de l’énergie. Pour accélérer, augmente ton activité plutôt que de réduire encore l’assiette.']);
+  if (r.obj === 'seche' && r.pace === 'rapide' && !r.floored) al.push(['⏱️','Rythme intensif : tiens-le 8 à 12 semaines au maximum, puis repasse une à deux semaines à la maintenance.']);
+  if (r.capped) al.push(['ℹ️','Tes protéines sont plafonnées à 40 % de tes calories, soit ' + r.prot + ' g : au-delà, il ne resterait plus assez de place pour les glucides et les lipides.']);
+  $('#alerts').innerHTML = al.map(function(a){ return '<p class="alert">' + emo(a[0]) + '<span>' + a[1] + '</span></p>'; }).join('');
+
+  $('#methodTxt').innerHTML = 'Métabolisme de base estimé avec la formule ' + (r.lbm !== null ? 'de Katch-McArdle, à partir de ta masse maigre' : 'de Mifflin-St Jeor') + ', multiplié par ton niveau d’activité quotidienne, auquel on ajoute la dépense réelle de tes séances (équivalents métaboliques par discipline). L’objectif applique ensuite un déficit ou un surplus en pourcentage.<br><br>Protéines : 2 g par kilo de poids de corps, 2,2 g en sèche et en recomposition pour protéger le muscle. Lipides : entre 25 et 35 % des calories pour l’équilibre hormonal. Glucides : le reste, pour l’énergie et la performance.<br><br>Pèse-toi 3 à 4 matins par semaine et compare les moyennes. Si la tendance ne suit pas la projection après deux semaines, ajuste de 150 kcal.';
+}
+
+/* ================= Menu ================= */
+var FOOD = {
+  skyr:{n:'Skyr nature', e:'🥛', p:10, g:4, l:0.2, cat:'dairy'},
+  avoine:{n:'Flocons d’avoine', e:'🌾', p:13.5, g:58.7, l:7, cat:'starch'},
+  courge:{n:'Graines de courge', e:'🎃', p:30, g:5, l:49, cat:'fat'},
+  rouges:{n:'Fruits rouges', e:'🍓', p:1, g:8, l:0.3, cat:'veg'},
+  poulet:{n:'Blanc de poulet', e:'🍗', p:23, g:0, l:1.5, cat:'meat'},
+  riz:{n:'Riz basmati', e:'🍚', p:8, g:77, l:0.6, cat:'starch'},
+  huile:{n:'Huile d’olive', e:'🫒', p:0, g:0, l:100, cat:'fat'},
+  legumes:{n:'Légumes verts', e:'🥦', p:2, g:5, l:0.3, cat:'veg'},
+  dinde:{n:'Blanc de dinde', e:'🦃', p:21, g:1, l:2.5, cat:'meat'},
+  pain:{n:'Pain complet', e:'🍞', p:9, g:41, l:3, cat:'starch'},
+  amandes:{n:'Amandes', e:'🌰', p:21, g:9, l:50, cat:'fat'},
+  banane:{n:'Banane', e:'🍌', p:1.1, g:20, l:0.3, cat:'veg'},
+  boeuf:{n:'Bœuf haché 5 %', e:'🥩', p:21, g:0, l:5, cat:'meat'},
+  pates:{n:'Pâtes complètes', e:'🍝', p:13, g:64, l:2.5, cat:'starch'}
+};
+var CATS = [['meat','🥩','Viandes'],['dairy','🥛','Produits laitiers'],['starch','🌾','Féculents et céréales'],['veg','🥦','Fruits et légumes'],['fat','🌰','Oléagineux et huiles']];
+var MEALS = [
+  {t:'7h30', e:'🥣', nom:'Petit-déjeuner', sh:[.25,.25,.25], v:['skyr','avoine','courge'], fx:[['rouges',100]], swap:'fromage blanc 0 % à la place du skyr, pain complet à la place de l’avoine.'},
+  {t:'12h30', e:'🍱', nom:'Déjeuner', sh:[.30,.30,.25], v:['poulet','riz','huile'], fx:[['legumes',200]], swap:'dinde, thon ou tofu ferme au même grammage ; quinoa ou pâtes à la place du riz.'},
+  {t:'16h30', e:'🥪', nom:'Collation', sh:[.15,.20,.20], v:['dinde','pain','amandes'], fx:[['banane',120]], swap:'en version nomade, un sandwich dinde, la banane et les amandes dans le sac.'},
+  {t:'20h', e:'🍝', nom:'Dîner', sh:[.30,.25,.30], v:['boeuf','pates','huile'], fx:[['legumes',200]], swap:'deux à trois soirs par semaine, saumon ou sardines pour les oméga-3 et la vitamine D.'}
+];
+var MIN_PROT = {skyr:150, poulet:110, dinde:60, boeuf:110};
+
+function gauss(M, v){
+  var n = v.length, A = M.map(function(row, i){ return row.concat([v[i]]); });
+  for (var c = 0; c < n; c++) {
+    var piv = c;
+    for (var r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[piv][c])) piv = r;
+    if (Math.abs(A[piv][c]) < 1e-12) return null;
+    var tmp = A[c]; A[c] = A[piv]; A[piv] = tmp;
+    for (var rr = 0; rr < n; rr++) {
+      if (rr === c) continue;
+      var f = A[rr][c]/A[c][c];
+      for (var k = c; k <= n; k++) A[rr][k] -= f*A[c][k];
+    }
+  }
+  return A.map(function(row, i){ return row[n]/row[i]; });
+}
+function solveFoods(cols, target, Wc){
+  var W = Wc || [4, 4, 9], best = null;
+  for (var mask = 1; mask < 8; mask++) {
+    var idx = [0,1,2].filter(function(i){ return (mask >> i) & 1; });
+    var n = idx.length, M = [], v = [];
+    for (var a = 0; a < n; a++) {
+      M.push([]);
+      for (var b = 0; b < n; b++) {
+        var s = 0;
+        for (var k = 0; k < 3; k++) s += W[k]*W[k]*cols[idx[a]][k]*cols[idx[b]][k];
+        M[a].push(s);
+      }
+      var sv = 0;
+      for (var k2 = 0; k2 < 3; k2++) sv += W[k2]*W[k2]*cols[idx[a]][k2]*target[k2];
+      v.push(sv);
+    }
+    var x = gauss(M, v);
+    if (!x || x.some(function(t){ return t < 0; })) continue;
+    var full = [0,0,0];
+    idx.forEach(function(i, j){ full[i] = x[j]; });
+    var err = 0;
+    for (var k3 = 0; k3 < 3; k3++) {
+      var tot = 0;
+      for (var i = 0; i < 3; i++) tot += cols[i][k3]*full[i];
+      err += Math.pow(W[k3]*(tot - target[k3]), 2);
+    }
+    if (!best || err < best.err) best = {x:full, err:err};
+  }
+  return best ? best.x : [0,0,0];
+}
+function qtyLabel(k, q){
+  if (k === 'huile') { var cs = Math.round(q/10*2)/2; return q + ' g, ' + (cs < 0.5 ? 'un filet' : fmtV.format(cs) + ' c. à soupe'); }
+  if (k === 'banane') return '1 moyenne';
+  if (k === 'legumes') return q + ' g ou plus';
+  return q + ' g';
+}
+function shopQty(k, g){
+  if (k === 'banane') return Math.round(g/120) + ' bananes';
+  if (k === 'huile') return '≈ ' + r10(g/0.92) + ' ml';
+  if (g >= 1000) return fmt1.format(g/1000) + ' kg';
+  return r10(g) + ' g';
+}
+function today(){ var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+function loadDone(){ try { var o = JSON.parse(localStorage.getItem(KEY_DAY) || 'null'); if (o && o.d === today()) return o.done || []; } catch(e) {} return []; }
+function saveDone(done){ try { localStorage.setItem(KEY_DAY, JSON.stringify({d:today(), done:done})); } catch(e) {} }
+
+var plan = null;
+var SWAP_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg>';
+var CHECK_ICON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg>';
+function renderMenu(r){
+  var T = [r.prot, r.carbs, r.fat], tot = [0,0,0], week = {};
+  plan = MEALS.map(function(m){
+    var tgt = T.map(function(v, i){ return v*m.sh[i]; });
+    m.fx.forEach(function(f){ var F = FOOD[f[0]], q = f[1]; tgt[0] -= F.p*q/100; tgt[1] -= F.g*q/100; tgt[2] -= F.l*q/100; });
+    var cols = m.v.map(function(k){ var F = FOOD[k]; return [F.p/100, F.g/100, F.l/100]; });
+    var x = solveFoods(cols, tgt);
+    var minQ = MIN_PROT[m.v[0]] || 0;
+    if (x[0] < minQ) {
+      var P0 = FOOD[m.v[0]];
+      var tgt2 = [tgt[0] - P0.p*minQ/100, tgt[1] - P0.g*minQ/100, tgt[2] - P0.l*minQ/100];
+      var cols2 = [[0,0,0], cols[1], cols[2]], tg = tgt2.slice();
+      for (var it = 0; it < 4; it++) {
+        x = solveFoods(cols2, tg, [0.5, 4, 9]);
+        var surplus = P0.p*minQ/100 + cols[1][0]*x[1] + cols[2][0]*x[2] - tgt[0];
+        tg = [tgt2[0], tgt2[1] - Math.max(0, surplus), tgt2[2]];
+      }
+      x[0] = minQ;
+    }
+    x = x.map(r5);
+    var items = [], mt = [0,0,0];
+    function add(k, q){
+      var F = FOOD[k];
+      mt[0] += F.p*q/100; mt[1] += F.g*q/100; mt[2] += F.l*q/100;
+      items.push([F.e, F.n, qtyLabel(k, q)]);
+      week[k] = (week[k] || 0) + q*7;
+    }
+    m.v.forEach(function(k, i){ var q = x[i]; if (q >= 10 || (k === 'huile' && q >= 5)) add(k, q); });
+    m.fx.forEach(function(f){ add(f[0], f[1]); });
+    tot = tot.map(function(v, i){ return v + mt[i]; });
+    return {m:m, items:items, mt:mt, kc:Math.round(mt[0]*4 + mt[1]*4 + mt[2]*9)};
+  });
+  var dayK = plan.reduce(function(a, p){ return a + p.kc; }, 0) || 1;
+  var done = loadDone();
+  $('#meals').innerHTML = plan.map(function(p, i){
+    var on = done.indexOf(i) >= 0;
+    var pk = p.mt[0]*4, gk = p.mt[1]*4, lk = p.mt[2]*9;
+    return '<li class="meal' + (on ? ' done' : '') + '">' +
+      '<div class="mtime">' + p.m.t + '</div><div class="mbody">' +
+      '<div class="mhead"><span class="memo emo" aria-hidden="true">' + p.m.e + '</span>' +
+      '<div class="mtitle"><h3>' + p.m.nom + '</h3><span><span class="tin">' + p.m.t + ', </span>' + fmt.format(p.kc) + ' kcal, ' + Math.round(p.kc/dayK*100) + ' % de ta journée</span></div>' +
+      '<button type="button" class="check" aria-pressed="' + on + '" data-i="' + i + '">' + CHECK_ICON + '<span>' + (on ? 'Validé' : 'Valider') + '</span><span class="sr"> : ' + p.m.nom + '</span></button></div>' +
+      '<ul class="items">' + p.items.map(function(it){ return '<li><span class="fi"><span class="fe" aria-hidden="true">' + it[0] + '</span>' + it[1] + '</span><b>' + it[2] + '</b></li>'; }).join('') + '</ul>' +
+      '<div class="mstack" aria-hidden="true"><i class="p" style="flex:' + pk.toFixed(0) + ' 1 0"></i><i class="g" style="flex:' + gk.toFixed(0) + ' 1 0"></i><i class="l" style="flex:' + lk.toFixed(0) + ' 1 0"></i></div>' +
+      '<p class="mm"><span><i class="d p"></i>' + Math.round(p.mt[0]) + ' g de protéines</span><span><i class="d g"></i>' + Math.round(p.mt[1]) + ' g de glucides</span><span><i class="d l"></i>' + Math.round(p.mt[2]) + ' g de lipides</span></p>' +
+      '<p class="swap">' + SWAP_ICON + '<span><b>Variante :</b> ' + p.m.swap + '</span></p></div></li>';
+  }).join('');
+  var dk = Math.round(tot[0]*4 + tot[1]*4 + tot[2]*9);
+  $('#dayTot').innerHTML = '<b>' + fmt.format(dk) + ' kcal</b><span>sur une cible de ' + fmt.format(r.kcal) + ' kcal</span><span><i class="d p"></i>' + Math.round(tot[0]) + ' g de protéines</span><span><i class="d g"></i>' + Math.round(tot[1]) + ' g de glucides</span><span><i class="d l"></i>' + Math.round(tot[2]) + ' g de lipides</span>';
+  updateProgress();
+
+  $('#shop').innerHTML = CATS.map(function(c){
+    var keys = Object.keys(week).filter(function(k){ return FOOD[k].cat === c[0]; });
+    if (!keys.length) return '';
+    return '<section><h4>' + emo(c[1]) + c[2] + '</h4><ul>' + keys.map(function(k){
+      return '<li><label><input type="checkbox"><span class="nm"><span class="emo" aria-hidden="true">' + FOOD[k].e + '</span>' + FOOD[k].n + '</span><b>' + shopQty(k, week[k]) + '</b></label></li>';
+    }).join('') + '</ul></section>';
+  }).join('');
+}
+function updateProgress(){
+  if (!plan || !lastR) return;
+  var done = loadDone(), kc = 0;
+  done.forEach(function(i){ if (plan[i]) kc += plan[i].kc; });
+  $('#progTxt').textContent = done.length + ' repas validé' + (done.length > 1 ? 's' : '') + ' sur ' + plan.length;
+  $('#progKcal').textContent = fmt.format(kc) + ' / ' + fmt.format(lastR.kcal) + ' kcal';
+  $('#progBar').style.width = Math.min(100, Math.round(kc/lastR.kcal*100)) + '%';
+}
+$('#meals').addEventListener('click', function(e){
+  var b = e.target.closest('.check');
+  if (!b) return;
+  var i = Number(b.getAttribute('data-i')), done = loadDone(), pos = done.indexOf(i);
+  if (pos >= 0) done.splice(pos, 1); else done.push(i);
+  saveDone(done);
+  var on = pos < 0;
+  b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  b.querySelector('span').textContent = on ? 'Validé' : 'Valider';
+  b.closest('.meal').classList.toggle('done', on);
+  updateProgress();
+});
+
+/* ================= Micronutriments ================= */
+function microList(r){
+  var male = r.male, intense = r.hoursWeek >= 5, k = intense ? 1.1 : 1, dailyH = r.hoursWeek/7;
+  return [
+    {grp:'min', e:'🦪', nom:'Zinc', u:'mg', cible:Math.round((male ? 12 : 9)*k), role:'Production de testostérone, immunité, réparation des tissus.', max:'Ne dépasse pas 25 mg par jour en cumulant les compléments.',
+      src:[['🦪','Huîtres','6 pièces',10],['🥩','Bœuf haché 5 %','150 g',7],['🎃','Graines de courge','30 g',2.3],['🌾','Flocons d’avoine','60 g',2.3],['🧆','Pois chiches cuits','150 g',2.3],['🥚','Œufs','2',1.4]]},
+    {grp:'min', e:'🍫', nom:'Magnésium', u:'mg', cible:Math.round((male ? 420 : 360)*k/10)*10, role:'Contraction musculaire, sommeil, gestion du stress.', max:'En complément, reste sous 250 mg par jour pour éviter les troubles digestifs.',
+      src:[['🎃','Graines de courge','30 g',165],['🥬','Épinards cuits','150 g',130],['💧','Eau Hépar','1 L',119],['🍲','Haricots noirs cuits','150 g',105],['🌰','Amandes','30 g',80],['🍫','Chocolat noir 85 %','20 g',45]]},
+    {grp:'min', e:'🍌', nom:'Potassium', u:'mg', cible:Math.round((3500 + dailyH*300)/100)*100, role:'Hydratation cellulaire, prévention des crampes, tension artérielle.',
+      src:[['🥔','Pomme de terre au four, avec la peau','200 g',1050],['🍠','Patate douce cuite','200 g',950],['🍲','Haricots blancs cuits','150 g',840],['🥬','Épinards cuits','150 g',700],['🍌','Banane','1 moyenne',430],['🥑','Avocat','un demi',365]]},
+    {grp:'min', e:'🧂', nom:'Sodium', u:'mg', cible:Math.round((2000 + dailyH*700)/50)*50, role:'Rétention de l’eau pendant l’effort, à compenser si tu transpires beaucoup.', max:'Hors sport, vise moins de 2 000 mg par jour, soit 5 g de sel. Ta cible intègre les pertes de sueur de tes séances.',
+      src:[['💧','Eau type St-Yorre','50 cl',850],['🍖','Jambon blanc','2 tranches',580],['🍞','Pain complet','100 g',480],['🧂','Sel','1 g, ⅙ de c. à café',400],['🧀','Feta','30 g',330]]},
+    {grp:'min', e:'🌰', nom:'Sélénium', u:'µg', cible:70, role:'Antioxydant, fonction thyroïdienne, fertilité.', max:'Limite : 255 µg par jour. Une à deux noix du Brésil suffisent ; leur teneur varie beaucoup d’une noix à l’autre.',
+      src:[['🐟','Thon au naturel','100 g',80],['🌰','Noix du Brésil','1 noix',70],['🐟','Sardines','100 g',52],['🦐','Crevettes','100 g',38],['🍗','Blanc de poulet','150 g',34],['🥚','Œufs','2',33]]},
+    {grp:'min', e:'🥩', nom:'Fer', u:'mg', cible:male ? 11 : (r.age < 50 ? 16 : 11), role:'Transport de l’oxygène vers les muscles. Une carence fait chuter l’endurance.', max:'Le fer végétal s’absorbe mieux avec de la vitamine C, moins avec un thé ou un café pendant le repas.',
+      src:[['🍗','Foie de volaille cuit','100 g',11],['🐚','Moules cuites','100 g',6.7],['🥬','Épinards cuits','150 g',5.4],['🍲','Lentilles cuites','150 g',5],['🥩','Bœuf','150 g',3.5]]},
+    {grp:'min', e:'🧀', nom:'Calcium', u:'mg', cible:r.age < 25 ? 1000 : 950, role:'Solidité osseuse et contraction musculaire.',
+      src:[['💧','Eau Hépar','1 L',549],['🐟','Sardines avec les arêtes','100 g',380],['⬜','Tofu au calcium','100 g',350],['🧀','Comté','30 g',300],['🥛','Skyr','150 g',180],['🥛','Yaourt nature','1 pot',150]]},
+    {grp:'min', e:'🦐', nom:'Iode', u:'µg', cible:150, role:'Carburant de la thyroïde, donc du métabolisme.',
+      src:[['🐟','Cabillaud','150 g',120],['🦐','Crevettes','100 g',40],['🥛','Lait ou yaourt','250 g',40],['🧂','Sel iodé','2 g',35],['🥚','Œufs','2',30]]},
+    {grp:'vit', e:'☀️', nom:'Vitamine D', u:'µg', cible:15, role:'Muscles, os, immunité, testostérone. Souvent déficitaire en hiver.', max:'Le soleil en produit : 15 à 20 minutes bras et visage découverts, d’avril à septembre. En hiver, demande un dosage à ton médecin.',
+      src:[['🐟','Hareng','100 g',15],['🐟','Maquereau','100 g',13],['🍣','Saumon','120 g',12],['🐟','Sardines à l’huile','100 g',5],['🥚','Œufs','2',2]]},
+    {grp:'vit', e:'🥚', nom:'Vitamine B12', u:'µg', cible:4, role:'Énergie, système nerveux, globules rouges.', max:'Sans aucun produit animal, la supplémentation est indispensable.',
+      src:[['🐚','Moules','100 g',20],['🐟','Sardines','100 g',8],['🍣','Saumon','120 g',3.5],['🥩','Bœuf','150 g',3.5],['🥚','Œufs','2',1.2]]},
+    {grp:'vit', e:'🍊', nom:'Vitamine C', u:'mg', cible:110, role:'Immunité, collagène des tendons, absorption du fer.',
+      src:[['🫑','Poivron rouge cru','100 g',130],['🥦','Brocoli cuit','150 g',90],['🍓','Fraises','150 g',85],['🍊','Orange','1',80],['🥝','Kiwi','1',70]]},
+    {grp:'ag', e:'🐟', nom:'Oméga-3 EPA et DHA', u:'mg', cible:500, role:'Inflammation, récupération, cœur et cerveau. Moyenne à viser sur la semaine.', max:'Deux portions de poisson gras par semaine couvrent l’essentiel. Noix et colza apportent un autre oméga-3 (ALA), que le corps convertit mal.',
+      src:[['🐟','Maquereau','100 g',2000],['🍣','Saumon','120 g',1500],['🐟','Hareng','100 g',1500],['🐟','Sardines','100 g',1000],['🐟','Thon au naturel','100 g',250]]}
+  ];
+}
+var GRP = {min:['🪨','Minéraux'], vit:['🌈','Vitamines'], ag:['💧','Acides gras essentiels']};
+function renderMicros(r){
+  var last = null, html = '';
+  microList(r).forEach(function(m){
+    if (m.grp !== last) { html += '<div class="mgroup">' + emo(GRP[m.grp][0]) + GRP[m.grp][1] + '</div>'; last = m.grp; }
+    var sorted = m.src.slice().sort(function(a, b){ return b[3] - a[3]; });
+    var tops = sorted.slice(0, 2).map(function(s){ return '<span class="top1">' + emo(s[0]) + s[1] + ' <b>' + Math.round(s[3]/m.cible*100) + ' %</b></span>'; }).join('');
+    var srcs = m.src.map(function(s){
+      var pct = Math.round(s[3]/m.cible*100);
+      return '<div class="si"><span>' + emo(s[0]) + ' ' + s[1] + ' <small>' + s[2] + '</small></span><span class="sv">' + fmtV.format(s[3]) + ' ' + m.u + ' <small>' + pct + ' %</small></span><span class="sb"><i style="width:' + Math.min(100, pct) + '%"></i></span></div>';
+    }).join('');
+    html += '<details class="micro"><summary><span class="memo emo" aria-hidden="true">' + m.e + '</span><span class="nm"><b>' + m.nom + '</b><span>' + m.role + '</span></span><span class="tg">' + fmt.format(m.cible) + ' <small>' + m.u + '/jour</small></span><span class="tops">' + tops + '</span><span class="pl" aria-hidden="true"></span></summary><div class="src">' + srcs + (m.max ? '<p class="note">' + m.max + '</p>' : '') + '</div></details>';
+  });
+  $('#microList').innerHTML = html;
+}
+
+/* ================= Objectifs ciblés ================= */
+function ev(level){
+  var m = {s:['Preuves solides','s'], m:['Preuves modérées','m'], f:['Piste à confirmer','f']}[level];
+  return m ? '<span class="ev ' + m[1] + '">' + m[0] + '</span>' : '';
+}
+function foodsList(items){
+  return '<ul class="foods">' + items.map(function(i){ return '<li><span class="fe" aria-hidden="true">' + i[0] + '</span><b>' + i[1] + '</b><span class="qt">' + i[2] + '</span><p>' + i[3] + (i[4] ? ev(i[4]) : '') + '</p></li>'; }).join('') + '</ul>';
+}
+function points(title, items, cls){
+  return '<div class="lev' + (cls ? ' ' + cls : '') + '"><h4>' + title + '</h4><ul>' + items.map(function(i){ return '<li>' + i + '</li>'; }).join('') + '</ul></div>';
+}
+function layout(st, h3, intro, foods, right, extra){
+  return '<div class="status">' + emo(st[0]) + '<p>' + st[1] + '</p></div><div class="pgrid"><div class="box"><h3>' + h3 + '</h3>' + (intro ? '<p class="intro">' + intro + '</p>' : '') + foodsList(foods) + '</div><div class="box">' + right + '</div></div>' + (extra || '');
+}
+function myth(t){ return '<p class="myth">' + emo('💡') + '<span>' + t + '</span></p>'; }
+var GOALS = [
+  {id:'hormones', e:'🧬', label:'Hormones'},
+  {id:'recup', e:'💪', label:'Récupération'},
+  {id:'sommeil', e:'🌙', label:'Sommeil'},
+  {id:'energie', e:'⚡', label:'Énergie et concentration'},
+  {id:'immunite', e:'🛡️', label:'Immunité'}
+];
+var CONTENT = {
+  hormones: function(r){
+    var fatPct = Math.round(r.fat*9/r.kcalMacros*100);
+    var st = 'Lipides de ton plan : <b>' + fatPct + ' % des calories</b>. ' + (fatPct >= 25 ? 'Tu es dans la zone favorable à ton équilibre hormonal.' : 'C’est un peu bas : vise au moins 25 %.');
+    if (r.obj === 'seche' && r.pace === 'rapide') st += ' Ton rythme de sèche est intensif : au-delà de 8 à 12 semaines, la testostérone tend à baisser. Prévois des pauses à la maintenance.';
+    var intro = r.male
+      ? 'L’alimentation ne fait pas grimper la testostérone au-delà de ton niveau naturel : elle l’empêche surtout de chuter. Voici les aliments qui comptent.'
+      : 'Chez la femme aussi, la testostérone joue sur l’énergie, la libido et le muscle. Les leviers sont les mêmes, avec une vigilance en plus sur le fer et le cycle.';
+    var foods = [
+      ['🦪','Huîtres','6 pièces, 1 à 2 fois par semaine','La source de zinc la plus concentrée, un minéral indispensable à la synthèse de testostérone.'],
+      ['🥩','Bœuf ou agneau','150 g, 3 à 4 fois par semaine','Zinc, vitamine B12 et cholestérol, la matière première des hormones stéroïdiennes.'],
+      ['🥚','Œufs entiers','2 à 3 par jour','Garde le jaune : il concentre la vitamine D et le cholestérol.'],
+      ['🐟','Saumon, sardines, maquereau','2 portions par semaine','Vitamine D et oméga-3.'],
+      ['🌰','Noix du Brésil','1 à 2 par jour', r.male ? 'Sélénium, utile à la fertilité. Pas plus de deux : l’excès est toxique.' : 'Sélénium pour la thyroïde. Pas plus de deux : l’excès est toxique.'],
+      ['🎃','Graines de courge','30 g par jour','Zinc et magnésium en une poignée.'],
+      ['🫒','Huile d’olive, avocat, noix','à chaque repas','Les acides gras de qualité qui te maintiennent au-dessus de 25 % de lipides.'],
+      ['🍫','Chocolat noir 85 %','20 g','Magnésium, et un plaisir compatible avec la sèche.']
+    ];
+    var lev = [
+      '<b>Un apport énergétique suffisant.</b> Un déficit trop marqué ou trop long fait baisser la testostérone.',
+      '<b>Au moins 25 % de lipides.</b> Les régimes très pauvres en graisses sont associés à une testostérone plus basse.',
+      '<b>7 à 9 h de sommeil.</b> Dans une étude publiée dans le JAMA, une semaine à 5 h par nuit a réduit la testostérone de 10 à 15 % chez de jeunes hommes.'
+    ];
+    if (r.male) lev.push('<b>Un taux de masse grasse maîtrisé.</b> L’excès de graisse abdominale convertit une partie de la testostérone en œstrogènes.');
+    else {
+      lev.push('<b>Ton cycle comme indicateur.</b> Des règles irrégulières ou absentes pendant une sèche signalent une énergie trop basse : remonte les calories et consulte un médecin.');
+      lev.push('<b>Le fer.</b> Vise ' + (r.age < 50 ? 16 : 11) + ' mg par jour, davantage si tes règles sont abondantes.');
+    }
+    lev.push('<b>La musculation lourde</b>, pratiquée régulièrement.');
+    var right = points('Les leviers qui comptent vraiment', lev) +
+      points('À limiter', ['L’alcool, surtout en grande quantité.','La réglisse consommée en excès.','Les produits ultra-transformés, qui favorisent la prise de masse grasse.'], 'minus') +
+      myth('Idée reçue : aux quantités habituelles, le soja ne fait pas baisser la testostérone d’après les méta-analyses récentes.');
+    var dht = '<div class="box dht"><h3>Et la DHT ?</h3>' +
+      '<p class="intro">La DHT est produite à partir de la testostérone par une enzyme, la 5-alpha-réductase. Son niveau dépend surtout de la génétique : l’alimentation n’a qu’une influence modeste, dans un sens comme dans l’autre.</p>' +
+      '<div class="dgrid"><div><h4>Pour la soutenir</h4><p>Les mêmes fondations que pour la testostérone : apport énergétique suffisant, lipides de qualité, aucune carence en zinc. Aucun aliment ne fait mieux.</p></div>' +
+      '<div><h4>Si tu surveilles tes cheveux</h4>' + foodsList([
+        ['🎃','Huile de graines de courge','en assaisonnement','Un petit essai clinique sur la chute de cheveux a donné des résultats encourageants.','f'],
+        ['🍵','Thé vert','2 à 3 tasses par jour','Une action sur l’enzyme observée surtout en laboratoire.','f'],
+        ['🍅','Tomates cuites','sauce, coulis','Riches en lycopène, étudié pour son effet sur la même enzyme.','f']
+      ]) + myth('En cas de chute de cheveux, un dermatologue dispose de traitements à l’efficacité démontrée. L’assiette ne les remplace pas.') + '</div></div></div>';
+    return layout(['🧬', st], r.male ? 'Testostérone' : 'Équilibre hormonal', intro, foods, right, dht);
+  },
+  recup: function(r){
+    var per = r5(r.prot/4);
+    var st = 'Avec ' + r.prot + ' g de protéines par jour, vise environ <b>' + per + ' g par repas</b> répartis sur 4 prises.';
+    var foods = [
+      ['🥛','Skyr ou fromage blanc','150 à 250 g','Protéines laitières riches en leucine, l’acide aminé qui déclenche la synthèse musculaire.'],
+      ['🍳','Œufs, poulet, poisson','à chaque repas','Des protéines complètes à répartir sur la journée.'],
+      ['🍚','Riz, pâtes, pommes de terre','après la séance','Reconstituent les réserves de glycogène, surtout si tu t’entraînes chaque jour.'],
+      ['🍒','Jus de cerise acidulée','2 shots de concentré par jour','Peut réduire les courbatures après un effort intense.','m'],
+      ['🐟','Poissons gras','2 fois par semaine','Oméga-3 aux effets anti-inflammatoires.'],
+      ['🧂','Eau et une pincée de sel','pendant la séance','Si tu transpires abondamment.']
+    ];
+    var right = points('Les leviers qui comptent vraiment', [
+      '<b>Le total avant le timing.</b> Atteindre ton quota quotidien de protéines compte davantage que le shaker en sortie de salle.',
+      '<b>Un vrai repas dans les 2 h</b> qui suivent la séance, avec protéines et glucides.',
+      '<b>La créatine monohydrate</b>, 3 à 5 g par jour : le complément le plus étudié pour la force et la masse musculaire.' + ev('s'),
+      '<b>Le sommeil</b>, ton meilleur outil de récupération.'
+    ]) + points('À limiter', ['L’alcool après l’entraînement : il freine la reconstruction musculaire.'], 'minus');
+    return layout(['💪', st], 'Dans ton assiette', '', foods, right);
+  },
+  sommeil: function(){
+    var st = 'La caféine reste plusieurs heures dans l’organisme : <b>dernière tasse avant 14 h</b> si tu te couches vers 23 h.';
+    var foods = [
+      ['🥝','Kiwi','2, une heure avant le coucher','Une petite étude a observé un endormissement plus rapide et des nuits plus longues.','f'],
+      ['🍠','Riz, pâtes, patate douce','au dîner','Un dîner riche en glucides facilite l’endormissement chez beaucoup de personnes.'],
+      ['🌰','Amandes, graines de courge','une poignée','Magnésium, souvent insuffisant chez les sportifs.'],
+      ['🥛','Lait ou yaourt','le soir','Tryptophane et calcium.','f'],
+      ['🍒','Cerises acidulées','jus ou fruits','Une source naturelle de mélatonine.','f']
+    ];
+    var right = points('Les leviers qui comptent vraiment', [
+      '<b>Dîner 2 à 3 h avant le coucher.</b> Une digestion lourde fragmente le sommeil.',
+      '<b>Des horaires réguliers</b>, week-end compris.',
+      '<b>Une chambre fraîche et sombre.</b>'
+    ]) + points('À limiter', ['L’alcool : il endort, mais dégrade le sommeil profond.','Les boissons énergisantes l’après-midi.','Les repas très gras le soir.'], 'minus');
+    return layout(['🌙', st], 'Dans ton assiette', '', foods, right);
+  },
+  energie: function(r){
+    var lo = r10(r.w), hi = Math.min(400, r10(r.w*3));
+    var st = 'Avant l’effort, une dose efficace de caféine se situe pour toi entre <b>' + lo + ' et ' + hi + ' mg</b>. Un expresso en apporte environ 80. Ne dépasse pas 400 mg sur la journée.';
+    var foods = [
+      ['🌾','Flocons d’avoine, pain complet','le matin','Une énergie stable, sans pic glycémique suivi d’un coup de fatigue.'],
+      ['🥩','Viande rouge, ou lentilles et poivron','3 à 4 fois par semaine','Le fer : sa carence est la première cause de fatigue chez les sportifs qui mangent peu de viande.'],
+      ['🥚','Œufs, poissons, laitages','chaque jour','Vitamine B12, essentielle à l’énergie et au système nerveux.'],
+      ['💧','Eau', fmt1.format(r.eauRepos) + ' L par jour','Une perte de 2 % de ton poids en eau suffit à dégrader tes performances.'],
+      ['☕','Café ou thé','avant 14 h','Vigilance et performance accrues, sans sacrifier le sommeil.','s']
+    ];
+    var right = points('Les leviers qui comptent vraiment', [
+      '<b>Un déjeuner modéré.</b> Un repas trop gras ou trop copieux plombe l’après-midi.',
+      '<b>Des glucides autour des séances</b>, là où ils sont le plus utiles.',
+      '<b>Une fatigue persistante ?</b> Demande un bilan sanguin à ton médecin : fer, ferritine, B12, vitamine D.'
+    ]) + points('À limiter', ['Les boissons énergisantes à répétition.','Les sucres rapides seuls, qui provoquent un pic puis un coup de fatigue.'], 'minus');
+    return layout(['⚡', st], 'Dans ton assiette', '', foods, right);
+  },
+  immunite: function(r){
+    var st = 'Ton plan prévoit <b>' + r.fibres + ' g de fibres par jour</b> : elles nourrissent ton microbiote intestinal, un pilier de tes défenses.';
+    var foods = [
+      ['🫑','Poivron, kiwi, agrumes','chaque jour','Vitamine C.'],
+      ['🥛','Yaourt, kéfir, choucroute crue','chaque jour','Aliments fermentés favorables au microbiote.','m'],
+      ['🥗','Légumineuses, légumes, fruits','à chaque repas','Les fibres qui nourrissent les bonnes bactéries.'],
+      ['🦪','Huîtres, bœuf, graines de courge','plusieurs fois par semaine','Zinc.'],
+      ['🐟','Poissons gras, œufs','2 fois par semaine','Vitamine D.'],
+      ['🌰','Noix du Brésil','1 par jour','Sélénium.']
+    ];
+    var right = points('Les leviers qui comptent vraiment', [
+      '<b>Éviter les sèches interminables.</b> Un déficit prolongé fragilise les défenses.',
+      '<b>Le sommeil</b>, encore et toujours.',
+      '<b>Les périodes de forte charge</b>, ou juste après une compétition, sont les plus à risque : soigne ton alimentation en priorité.'
+    ]) + points('À limiter', ['L’alcool en grande quantité.','Les journées sans fruits ni légumes.'], 'minus');
+    return layout(['🛡️', st], 'Dans ton assiette', '', foods, right);
+  }
+};
+var currentGoal = 'hormones';
+function renderGoals(){
+  $('#goals').innerHTML = GOALS.map(function(g){
+    var sel = g.id === currentGoal;
+    return '<button type="button" class="gbtn" role="tab" id="g-' + g.id + '" data-id="' + g.id + '" aria-controls="goalPanel" aria-selected="' + sel + '" tabindex="' + (sel ? 0 : -1) + '">' + emo(g.e) + g.label + '</button>';
+  }).join('');
+  $('#goalPanel').setAttribute('aria-labelledby', 'g-' + currentGoal);
+  if (lastR) $('#goalPanel').innerHTML = CONTENT[currentGoal](lastR);
+}
+$('#goals').addEventListener('click', function(e){
+  var b = e.target.closest('.gbtn'); if (!b) return;
+  currentGoal = b.getAttribute('data-id'); renderGoals();
+  var nb = $('#g-' + currentGoal); if (nb) nb.focus();
+});
+$('#goals').addEventListener('keydown', function(e){
+  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+  var i = GOALS.findIndex(function(g){ return g.id === currentGoal; });
+  i = (i + (e.key === 'ArrowRight' ? 1 : GOALS.length - 1)) % GOALS.length;
+  currentGoal = GOALS[i].id; renderGoals();
+  var nb = $('#g-' + currentGoal); if (nb) nb.focus();
+  e.preventDefault();
+});
+
+/* ================= Démarrage ================= */
+var saved = load();
+writeForm(saved);
+if (!$('#seances').value) $('#seances').value = DEFAULTS.seances;
+if (Object.keys(check(saved)).length === 0) openDash(saved);
+else openWizard(false);
+})();
+</script>
+</body>
+</html>
