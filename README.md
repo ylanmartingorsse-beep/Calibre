@@ -10,7 +10,11 @@ Pour tester comme en ligne (polices, manifeste, page 404) : `python3 -m http.ser
 
 ## Mettre en ligne
 
-Le dossier se publie tel quel sur n'importe quel hébergeur de site statique (Netlify, Cloudflare Pages, GitHub Pages…). `404.html` est reconnu automatiquement par ces hébergeurs. Avant la mise en ligne, compléter les champs `[…]` des pages légales et mettre le domaine dans les balises de partage d'`index.html`.
+Le site est prévu pour GitHub Pages, à l'adresse https://ylanmartingorsse-beep.github.io/Calibre/.
+
+1. Le dépôt doit être public.
+2. Sur GitHub : Settings → Pages → Source « Deploy from a branch » → branche `main`, dossier `/ (root)`.
+3. Après une ou deux minutes, le site est en ligne. `404.html` est utilisé automatiquement pour les pages introuvables.
 
 ## Structure
 

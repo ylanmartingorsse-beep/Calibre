@@ -14,7 +14,7 @@ Public visé : les sportifs, et surtout les actifs pressés qui n'ont pas le tem
 - Fichiers annexes : `mentions-legales.html`, `confidentialite.html` et `404.html` (style commun dans `pages.css`), `favicon.svg`, `apple-touch-icon.png`, `icons/`, `manifest.webmanifest`, `og-image.png` (aperçu de partage 1200×630).
 - Polices : Barlow et Barlow Condensed, hébergées dans `fonts/` (woff2, sous-ensemble latin, licence `fonts/OFL.txt`). Aucune requête vers un service tiers : c'est un argument de la page Confidentialité, à préserver.
 - Les réponses de l'utilisateur restent dans son navigateur (localStorage, clés `calibre-v2` pour le profil et `calibre-jour` pour les repas validés du jour).
-- Mode clair et sombre automatiques. Pensé mobile d'abord : sous 720 px de large, les onglets passent dans une barre en bas de l'écran.
+- Toujours en mode sombre (`color-scheme: dark`, pas de mode clair). Pensé mobile d'abord : sous 720 px de large, les onglets passent dans une barre en bas de l'écran.
 
 ## Parcours utilisateur
 
@@ -49,8 +49,11 @@ Ne pas modifier ces règles sans demande explicite.
 
 ## Design
 
-- Identité : vert sapin `#0F3B30`, protéines en bleu, glucides en ambre, lipides en vert.
-- Signature visuelle : motif de règle graduée en bas des bandeaux verts, clin d'œil au nom « Calibre ».
+- Identité « Sport premium sombre » : fond noir `#0B0B0C`, cartes `#151517` avec liseré `#2A2A2F`, accent néon citron vert `#C6FF3D` (boutons, onglet actif, progression, logo).
+- Macros : protéines en bleu `#6E8BFF`, glucides en ambre `#FFB020`, lipides en vert `#2FD4A0`.
+- Typo : Barlow Condensed 800 en capitales pour les titres et les chiffres, étiquettes espacées en capitales ; Barlow pour le texte.
+- Signature visuelle : la jauge segmentée (barres en tirets façon compte-tours, via le masque `--seg`) pour les macros, l'anneau, la progression et le suivi des repas. Logo : un « C » en arc segmenté néon.
+- Couleurs centralisées dans les variables de `:root` (`index.html`) et de `pages.css` : les garder synchronisées.
 - Emojis pour illustrer les aliments, les repas et les objectifs.
 - Accessibilité : contrastes suffisants, focus visibles, onglets navigables au clavier, `prefers-reduced-motion` respecté.
 
@@ -74,14 +77,15 @@ Commencer chaque réponse par ces 5 points, en une ou deux lignes chacun :
 - Messages de commit en français, courts et clairs.
 - Le propriétaire du projet travaille souvent depuis son téléphone : réponses courtes, et un résumé clair de ce qui a changé à la fin de chaque tâche.
 
-## Avant la mise en ligne
+## Mise en ligne
 
-- Compléter les champs surlignés `[…]` (balises `mark.todo`) dans `mentions-legales.html` et `confidentialite.html` : éditeur, contact, hébergeur, date.
-- Remplacer les URL relatives des balises `og:` d'`index.html` par le domaine définitif, et ajouter `<link rel="canonical">`.
+- Hébergement : GitHub Pages, adresse https://ylanmartingorsse-beep.github.io/Calibre/ (dépôt public, branche `main`, dossier racine, fichier `.nojekyll`).
+- Le site vit dans le sous-dossier `/Calibre/` : `404.html` utilise des chemins absolus `/Calibre/…` ; `canonical` et `og:` d'`index.html` pointent vers l'URL complète. À changer si un nom de domaine est ajouté.
+- Mentions légales remplies : éditeur Ylan MARTIN GORSSE (non professionnel, adresse non publiée au titre de la LCEN art. 6-III-2), hébergeur GitHub, Inc.
 
 ## Idées pour la suite
 
 - Page d'accueil vitrine avant le questionnaire.
 - Options alimentaires : végétarien, sans porc, sans poisson, sans lactose.
-- Mise en ligne sur un nom de domaine (le site est prêt : il reste les infos légales et le domaine).
+- Nom de domaine personnalisé (le site est déjà prêt pour GitHub Pages).
 - Comptes utilisateurs pour retrouver son plan sur tous ses appareils.
