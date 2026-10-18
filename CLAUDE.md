@@ -71,7 +71,7 @@ Commencer chaque réponse par ces 5 points, en une ou deux lignes chacun :
 
 ### Habitudes
 
-- Avant de valider un changement visible, vérifier le rendu sur mobile (390 px) et sur ordinateur (1366 px), en mode clair et en mode sombre.
+- Avant de valider un changement visible, vérifier le rendu sur mobile (390 px) et sur ordinateur (1366 px).
 - Après tout changement de calcul, tester au moins quatre profils (homme et femme, sèche et prise de masse) et vérifier que le menu reste à ±2 % de la cible.
 - Garder un site sans étape de compilation tant qu'aucun framework n'a été choisi.
 - Messages de commit en français, courts et clairs.
@@ -82,6 +82,40 @@ Commencer chaque réponse par ces 5 points, en une ou deux lignes chacun :
 - Hébergement : GitHub Pages, adresse https://ylanmartingorsse-beep.github.io/Calibre/ (dépôt public, branche `main`, dossier racine, fichier `.nojekyll`).
 - Le site vit dans le sous-dossier `/Calibre/` : `404.html` utilise des chemins absolus `/Calibre/…` ; `canonical` et `og:` d'`index.html` pointent vers l'URL complète. À changer si un nom de domaine est ajouté.
 - Mentions légales remplies : éditeur Ylan MARTIN GORSSE (non professionnel, adresse non publiée au titre de la LCEN art. 6-III-2), hébergeur GitHub, Inc.
+
+## Où on en est (octobre 2026)
+
+- Branche `preparation-lancement` poussée : préparation au lancement (icônes, partage, polices locales, pages légales, 404), puis nouveau design « Sport premium sombre ». Pull request vers `main` pas encore ouverte : la proposer à Ylan.
+- Ensuite, Ylan doit : fusionner la pull request, rendre le dépôt public si besoin, activer GitHub Pages (Settings → Pages → `main` / `(root)`).
+- Aperçu privé du site : https://claude.ai/artifact/RkC6FQUFVudcnm8WUPcspT (à republier après chaque changement visible).
+- Le numéro de téléphone de GitHub n'est pas dans les mentions légales (aucune source officielle trouvée) : on y renvoie à support.github.com/contact.
+
+## Monétisation (pistes discutées, rien n'est décidé)
+
+Ylan veut pouvoir monétiser Calibre. Points clés déjà expliqués :
+
+- **GitHub Pages** ne doit pas héberger un site surtout commercial (vente, abonnement). Un bouton de dons est accepté. Pour vendre, migrer vers Netlify ou Cloudflare Pages.
+- **Statut** : revenus réguliers → micro-entreprise avant la première vente (franchise de TVA possible), SIRET dans les mentions légales, CGV avec droit de rétractation pour le contenu numérique. L'éditeur n'est alors plus « non professionnel » : l'adresse doit apparaître (domiciliation possible).
+- **Publicité déconseillée** : peu rentable, et les cookies casseraient la promesse « zéro cookie » de la page Confidentialité.
+- Options comparées : dons, affiliation (avec mention « lien affilié »), Premium, publicité.
+
+### Offre Premium envisagée
+
+- Gratuit inchangé : calories, macros, micros, 1 menu du jour, liste de courses.
+- Premium : 7 menus différents par semaine, options alimentaires (végétarien, sans porc, sans poisson, sans lactose), export PDF, suivi du poids avec réajustement hebdomadaire, recettes, synchro entre appareils.
+- Prix habituels du marché : 4,99 €/mois ou 29,99 €/an, ou achat à vie autour de 19 €, avec 7 jours d'essai gratuit.
+- **Étape A (recommandée en premier)** : paiement via Lemon Squeezy ou Paddle (ils gèrent la TVA européenne, environ 5 % par vente, à vérifier), clé de licence collée dans Calibre, données toujours dans le navigateur, site toujours sans compilation, hébergement Netlify ou Cloudflare Pages. Pas de synchro.
+- **Étape B (si les ventes suivent)** : comptes (Supabase par exemple) et abonnement (Stripe ou Lemon Squeezy), synchro en ligne. Il faudra choisir un framework avec Ylan. Le poids et la masse grasse sont des données de santé (article 9 du RGPD) : consentement explicite et hébergement adapté à étudier.
+
+### Feuille de route proposée
+
+1. Mise en ligne gratuite sur GitHub Pages et bouton de dons, pour mesurer l'intérêt.
+2. Développement des fonctions Premium : options alimentaires, puis 7 menus, puis export PDF.
+3. Micro-entreprise, CGV et migration vers Netlify.
+4. Lancement du Premium avec clé de licence (étape A).
+5. Comptes et synchro (étape B).
+
+Prochaine décision attendue d'Ylan : par quelle étape commencer (1 ou 2).
 
 ## Idées pour la suite
 
