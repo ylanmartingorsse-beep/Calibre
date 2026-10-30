@@ -90,7 +90,7 @@ Commencer chaque réponse par ces 5 points, en une ou deux lignes chacun :
 - Branche `preparation-lancement` : préparation au lancement (icônes, partage, polices locales, pages légales, 404) et design « Sport premium sombre », remplacé depuis.
 - Branche `refonte-gourmet` (30 octobre 2026), partie de `preparation-lancement` : refonte complète « Carte du chef », vraies photos, recettes avec étapes, onglet Contact. Calculs vérifiés identiques sur 6 profils. C'est la version à proposer pour `main`.
 - Ensuite, Ylan doit : fusionner la pull request vers `main`, puis activer GitHub Pages (Settings → Pages → `main` / `(root)`). Le dépôt est déjà public.
-- Aperçu privé du site refondu : voir le lien donné à Ylan dans la conversation (artifact à republier après chaque changement visible).
+- Aperçu privé du site refondu : https://claude.ai/artifact/DDdiBkEp2kAxDRsCXTVB9e (à republier après chaque changement visible).
 - Le numéro de téléphone de GitHub n'est pas dans les mentions légales (aucune source officielle trouvée) : on y renvoie à support.github.com/contact.
 
 ## Monétisation (pistes discutées, rien n'est décidé)
