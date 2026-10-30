@@ -1,0 +1,35 @@
+/* Style commun des pages secondaires (mentions légales, confidentialité, 404). Même identité « Carte du chef » que index.html. */
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  color-scheme:dark;
+  --bg:#14100D; --bg2:#1A1511; --surface:#201A15; --line:rgba(237,227,211,.10); --line2:rgba(237,227,211,.19);
+  --text:#EDE3D3; --muted:#AB9E8B; --brass:#C9A66B; --brass2:#E0C391; --ivory:#EDE3D3; --on-ivory:#17120E;
+  --serif:"Cormorant Garamond",Garamond,"Times New Roman",serif;
+}
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:1.0625rem;line-height:1.65;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-font-smoothing:antialiased}
+h1,h2{font-variant-numeric:lining-nums}
+:focus-visible{outline:2px solid var(--brass2);outline-offset:2px}
+a{color:var(--brass2);font-weight:600;text-underline-offset:3px}
+.wrap{max-width:780px;margin:0 auto;padding:0 16px}
+@media (min-width:720px){.wrap{padding:0 36px}}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;height:70px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-style:italic;font-weight:600;font-size:1.9rem;line-height:1;color:var(--text);text-decoration:none}
+.brand svg{width:24px;height:24px}
+.back{display:inline-flex;align-items:center;height:38px;padding:0 15px;border:1px solid var(--line2);border-radius:999px;color:var(--text);font-size:.92rem;font-weight:600;text-decoration:none}
+.back:hover{border-color:var(--brass)}
+.band{padding:clamp(32px,6vw,56px) 0 26px}
+.band .kick{font-family:var(--serif);font-style:italic;font-weight:500;font-size:1.3rem;color:var(--brass2);margin:0 0 4px}
+.band h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.6rem,7vw,3.8rem);line-height:.98;letter-spacing:-.015em;margin:0 0 12px}
+.band p{margin:0;color:var(--muted);max-width:48ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,4vw,36px)}
+.card h2{font-family:var(--serif);font-weight:600;font-size:1.75rem;line-height:1.1;margin:30px 0 8px}
+.card h2:first-child{margin-top:0}
+.card p,.card ul{margin:0 0 12px}
+.card ul{padding-left:1.2em}
+.card li::marker{color:var(--brass)}
+code{font-size:.92em;padding:1px 6px;border-radius:6px;background:var(--bg2);border:1px solid var(--line)}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:54px;padding:0 28px;border-radius:999px;background:var(--ivory);color:var(--on-ivory);text-decoration:none;font-weight:600}
+footer{margin:44px 0 0;padding:20px 0 32px;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+footer a{color:var(--muted);font-weight:500}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 18px}
