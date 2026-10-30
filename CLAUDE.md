@@ -1,4 +1,4 @@
-# Calibre, ton plan nutrition sur mesure
+# Calibre, le plan d’un chef calibré au gramme
 
 Fiche projet lue par Claude Code au début de chaque session. La garder à jour quand une décision importante change.
 
@@ -6,24 +6,26 @@ Fiche projet lue par Claude Code au début de chaque session. La garder à jour 
 
 Calibre calcule un plan nutrition personnalisé : calories, macronutriments au gramme près, 12 micronutriments, menu du jour, liste de courses et conseils ciblés (hormones, récupération, sommeil, énergie, immunité).
 
-Public visé : les sportifs, et surtout les actifs pressés qui n'ont pas le temps de réfléchir eux-mêmes à leur alimentation.
+Public visé : les fins gourmets comme les sportifs de haut niveau, et les actifs pressés qui n'ont pas le temps de réfléchir eux-mêmes à leur alimentation.
 
 ## État actuel
 
 - L'application tient dans `index.html` : HTML, CSS et JavaScript dans un seul fichier, aucune dépendance, aucune étape de compilation.
-- Fichiers annexes : `mentions-legales.html`, `confidentialite.html` et `404.html` (style commun dans `pages.css`), `favicon.svg`, `apple-touch-icon.png`, `icons/`, `manifest.webmanifest`, `og-image.png` (aperçu de partage 1200×630).
-- Polices : Barlow et Barlow Condensed, hébergées dans `fonts/` (woff2, sous-ensemble latin, licence `fonts/OFL.txt`). Aucune requête vers un service tiers : c'est un argument de la page Confidentialité, à préserver.
+- Fichiers annexes : `mentions-legales.html`, `confidentialite.html` et `404.html` (style commun dans `pages.css`), `favicon.svg`, `apple-touch-icon.png`, `icons/`, `manifest.webmanifest`, `og-image.jpg` (aperçu de partage 1200×630).
+- Photos dans `img/` (WebP, libres de droits Unsplash, hébergées sur le site, liste dans `img/CREDITS.md`) : `plat-*` pour les 4 recettes (1200 px et 640 px), `ing-*` pour les 14 ingrédients et `mic-*` pour les 12 micronutriments (160 px), `obj-*` pour les 5 objectifs (1200 et 640 px), `ambiance` pour l'accueil.
+- Polices : Cormorant Garamond (titres, noms des plats), Barlow (texte) et Barlow Condensed (chiffres), hébergées dans `fonts/` (woff2, sous-ensemble latin, licences `fonts/OFL.txt` et `fonts/OFL-Cormorant.txt`). Aucune requête vers un service tiers, ni police, ni photo, ni script : c'est un argument de la page Confidentialité, à préserver.
 - Les réponses de l'utilisateur restent dans son navigateur (localStorage, clés `calibre-v2` pour le profil et `calibre-jour` pour les repas validés du jour).
 - Toujours en mode sombre (`color-scheme: dark`, pas de mode clair). Pensé mobile d'abord : sous 720 px de large, les onglets passent dans une barre en bas de l'écran.
 
 ## Parcours utilisateur
 
 1. Questionnaire en 4 étapes : profil (sexe, âge, taille, poids, masse grasse facultative), rythme de vie, entraînement, objectif avec son intensité.
-2. Tableau de bord à 4 onglets :
-   - **Synthèse** : anneau des macros, métabolisme, dépense, déficit ou surplus, projection à 8 semaines, hydratation, fibres.
-   - **Menu** : 4 repas avec grammages, validation des repas, liste de courses pour 7 jours à cocher.
+2. Tableau de bord à 5 onglets :
+   - **Synthèse** : anneau des macros, aperçu des 4 recettes du jour, métabolisme, dépense, déficit ou surplus, projection à 8 semaines, hydratation, fibres.
+   - **La carte du jour** : 4 recettes avec photo, nom du plat, temps, ingrédients en photo avec grammages, étapes de préparation, variante, validation du repas ; liste de courses pour 7 jours à cocher.
    - **Micronutriments** : besoins du jour et meilleures sources alimentaires.
-   - **Objectifs** : aliments ciblés par objectif, avec le niveau de preuve de chaque conseil, dont une partie testostérone et DHT.
+   - **Objectifs** : aliments ciblés par objectif (bannière photo par objectif), avec le niveau de preuve de chaque conseil, dont une partie testostérone et DHT.
+   - **Contact** : boutons directs, sans service tiers. « Écrire un e-mail » ouvre la messagerie du visiteur avec un sujet prérempli et, s'il coche la case, le résumé de son plan ; « Copier l'adresse ». Instagram et WhatsApp s'affichent automatiquement si on les renseigne dans `CONTACT` (script de `index.html`).
 3. Un utilisateur qui revient arrive directement sur son plan ; le bouton « Modifier » rouvre le questionnaire.
 
 ## Règles de calcul
@@ -49,12 +51,12 @@ Ne pas modifier ces règles sans demande explicite.
 
 ## Design
 
-- Identité « Sport premium sombre » : fond noir `#0B0B0C`, cartes `#151517` avec liseré `#2A2A2F`, accent néon citron vert `#C6FF3D` (boutons, onglet actif, progression, logo).
-- Macros : protéines en bleu `#6E8BFF`, glucides en ambre `#FFB020`, lipides en vert `#2FD4A0`.
-- Typo : Barlow Condensed 800 en capitales pour les titres et les chiffres, étiquettes espacées en capitales ; Barlow pour le texte.
-- Signature visuelle : la jauge segmentée (barres en tirets façon compte-tours, via le masque `--seg`) pour les macros, l'anneau, la progression et le suivi des repas. Logo : un « C » en arc segmenté néon.
+- Identité « Carte du chef » (restaurant étoilé × labo de performance), choisie par Ylan le 30 octobre 2026 : fond expresso `#14100D`, cartes `#201A15` avec liseré ivoire très léger, texte ivoire `#EDE3D3`, accent laiton `#C9A66B` (onglet actif, détails, numéros d'étapes), boutons ivoire.
+- Macros : protéines grenade `#DB7563`, glucides safran `#E6B24D`, lipides olive `#AFBE62`.
+- Typo : Cormorant Garamond pour les titres, en italique laiton pour les petites accroches et les noms de repas ; Barlow Condensed pour tous les chiffres (calories, grammes) ; Barlow pour le texte. Pas de capitales espacées. Espace insécable avant « ? » et « : ».
+- Signature visuelle : les vraies photos d'aliments et les points de conduite (pointillés) entre un ingrédient et son grammage, comme sur une carte de restaurant. Logo : un « C » en arc laiton avec des graduations, clin d'œil au pied à coulisse.
 - Couleurs centralisées dans les variables de `:root` (`index.html`) et de `pages.css` : les garder synchronisées.
-- Emojis pour illustrer les aliments, les repas et les objectifs.
+- Photos plutôt qu'emojis. Pour ajouter une photo : la choisir sur Unsplash (licence Unsplash, hors photos « Unsplash+ » payantes), la convertir en WebP au bon format, l'enregistrer dans `img/` et l'ajouter à `img/CREDITS.md`. Ne jamais charger une image depuis un site externe.
 - Accessibilité : contrastes suffisants, focus visibles, onglets navigables au clavier, `prefers-reduced-motion` respecté.
 
 ## Méthode de travail
@@ -71,7 +73,7 @@ Commencer chaque réponse par ces 5 points, en une ou deux lignes chacun :
 
 ### Habitudes
 
-- Avant de valider un changement visible, vérifier le rendu sur mobile (390 px) et sur ordinateur (1366 px).
+- Avant de valider un changement visible, vérifier le rendu sur mobile (390 px) et sur ordinateur (1366 px), via un petit serveur local (`python3 -m http.server`) : en ouvrant le fichier directement, les polices sont bloquées.
 - Après tout changement de calcul, tester au moins quatre profils (homme et femme, sèche et prise de masse) et vérifier que le menu reste à ±2 % de la cible.
 - Garder un site sans étape de compilation tant qu'aucun framework n'a été choisi.
 - Messages de commit en français, courts et clairs.
@@ -85,9 +87,10 @@ Commencer chaque réponse par ces 5 points, en une ou deux lignes chacun :
 
 ## Où on en est (octobre 2026)
 
-- Branche `preparation-lancement` poussée : préparation au lancement (icônes, partage, polices locales, pages légales, 404), puis nouveau design « Sport premium sombre ». Pull request vers `main` pas encore ouverte : la proposer à Ylan.
-- Ensuite, Ylan doit : fusionner la pull request, rendre le dépôt public si besoin, activer GitHub Pages (Settings → Pages → `main` / `(root)`).
-- Aperçu privé du site : https://claude.ai/artifact/RkC6FQUFVudcnm8WUPcspT (à republier après chaque changement visible).
+- Branche `preparation-lancement` : préparation au lancement (icônes, partage, polices locales, pages légales, 404) et design « Sport premium sombre », remplacé depuis.
+- Branche `refonte-gourmet` (30 octobre 2026), partie de `preparation-lancement` : refonte complète « Carte du chef », vraies photos, recettes avec étapes, onglet Contact. Calculs vérifiés identiques sur 6 profils. C'est la version à proposer pour `main`.
+- Ensuite, Ylan doit : fusionner la pull request vers `main`, puis activer GitHub Pages (Settings → Pages → `main` / `(root)`). Le dépôt est déjà public.
+- Aperçu privé du site refondu : voir le lien donné à Ylan dans la conversation (artifact à republier après chaque changement visible).
 - Le numéro de téléphone de GitHub n'est pas dans les mentions légales (aucune source officielle trouvée) : on y renvoie à support.github.com/contact.
 
 ## Monétisation (pistes discutées, rien n'est décidé)
@@ -120,6 +123,7 @@ Prochaine décision attendue d'Ylan : par quelle étape commencer (1 ou 2).
 ## Idées pour la suite
 
 - Page d'accueil vitrine avant le questionnaire.
+- Ajouter Instagram ou WhatsApp dans l'onglet Contact si Ylan le souhaite.
 - Options alimentaires : végétarien, sans porc, sans poisson, sans lactose.
 - Nom de domaine personnalisé (le site est déjà prêt pour GitHub Pages).
 - Comptes utilisateurs pour retrouver son plan sur tous ses appareils.

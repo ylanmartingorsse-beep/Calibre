@@ -1,6 +1,6 @@
 # Calibre
 
-Site de nutrition sur mesure : calories, macronutriments, micronutriments, menu du jour et liste de courses, calculés selon le profil, l'activité et l'objectif de chacun (sèche, recomposition, maintien, prise de masse).
+Le plan d’un chef, calibré au gramme : calories, macronutriments, micronutriments, quatre recettes du jour en photo et liste de courses, calculés selon le profil, l'activité et l'objectif de chacun (sèche, recomposition, maintien, prise de masse).
 
 ## Ouvrir le site
 
@@ -20,8 +20,9 @@ Le site est prévu pour GitHub Pages, à l'adresse https://ylanmartingorsse-beep
 
 - `index.html` : le site complet (structure, styles et logique de calcul).
 - `mentions-legales.html`, `confidentialite.html`, `404.html` : pages secondaires, style commun dans `pages.css`.
-- `fonts/` : polices Barlow hébergées sur le site (licence OFL).
-- `favicon.svg`, `apple-touch-icon.png`, `icons/`, `manifest.webmanifest`, `og-image.png` : icônes et aperçu de partage.
+- `img/` : photos des recettes, ingrédients, micronutriments et objectifs (WebP, licence Unsplash, crédits dans `img/CREDITS.md`).
+- `fonts/` : polices Cormorant Garamond, Barlow et Barlow Condensed hébergées sur le site (licence OFL).
+- `favicon.svg`, `apple-touch-icon.png`, `icons/`, `manifest.webmanifest`, `og-image.jpg` : icônes et aperçu de partage.
 - `CLAUDE.md` : la fiche projet que Claude Code lit au début de chaque session (règles de calcul, design, méthode de travail).
 
 ## Avertissement
